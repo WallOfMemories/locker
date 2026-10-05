@@ -1,0 +1,189 @@
+/* Time Capsules page — namespaced "capsules" */
+.capsules {
+  --ink: #241f1a;
+  --ink-soft: #867c70;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #55684a;
+  --line: rgba(36, 31, 26, 0.1);
+}
+
+.capsules__header h1 {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+  color: var(--ink);
+}
+
+.capsules__header p {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.capsules__note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.capsules__note--error {
+  color: #b3261e;
+}
+
+.capsules__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.capsules__card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(36, 31, 26, 0.06);
+}
+
+.capsules__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--ink);
+}
+
+.capsules__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Only the owner sees this thumbnail — still blurred so it feels sealed */
+.capsules__card.is-locked .capsules__media img {
+  filter: blur(14px) brightness(0.7);
+  transform: scale(1.1);
+}
+
+.capsules__lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f7f1e3;
+  font-size: 40px;
+}
+
+.capsules__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px 16px;
+}
+
+.capsules__badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(180, 80, 42, 0.12);
+  color: var(--rust-deep);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.capsules__badge--open {
+  background: rgba(85, 104, 74, 0.16);
+  color: var(--sage);
+}
+
+.capsules__caption {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.capsules__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.capsules__meta svg {
+  flex-shrink: 0;
+  color: var(--rust);
+}
+
+.capsules__meta span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.capsules__when {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.capsules__when small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.capsules__empty {
+  max-width: 420px;
+  padding: 40px 0;
+}
+
+.capsules__empty-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: rgba(180, 80, 42, 0.1);
+  color: var(--rust-deep);
+  font-size: 26px;
+}
+
+.capsules__empty h2 {
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.capsules__empty p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.capsules__empty button {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 12px;
+  background: var(--rust);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.capsules__empty button:hover {
+  background: var(--rust-deep);
+}

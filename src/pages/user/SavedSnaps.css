@@ -1,0 +1,48 @@
+.saved-snaps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.saved-snap-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: white;
+}
+
+.saved-snap-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+  object-fit: cover;
+}
+
+.saved-snap-card > div {
+  padding: 14px;
+}
+
+.saved-snap-card strong {
+  font-size: 14px;
+}
+
+.saved-snap-card p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .saved-snaps-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .saved-snaps-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,152 @@
+/* ============================================================
+   Time Locker (Create Snap) — uses tokens from .createsnap
+   ============================================================ */
+.locker {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1.5px solid rgba(180, 80, 42, 0.35);
+  border-radius: 16px;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(180, 80, 42, 0.04) 0 10px,
+      transparent 10px 20px
+    ),
+    var(--mat, #fbf8ef);
+}
+
+.locker__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.locker__icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--rust, #b4502a);
+  color: var(--paper, #f7f1e3);
+  font-size: 20px;
+  box-shadow: 0 8px 16px rgba(180, 80, 42, 0.3);
+}
+
+.locker__title {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #241f1a);
+}
+
+.locker__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft, #6b6055);
+}
+
+.locker__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.locker__chip {
+  padding: 8px 14px;
+  border: 1px solid var(--line, rgba(36, 31, 26, 0.12));
+  border-radius: 999px;
+  background: var(--paper-soft, #fffdf8);
+  font-family: var(--font-body, "Inter", system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft, #6b6055);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.locker__chip:hover {
+  border-color: var(--rust, #b4502a);
+  background: rgba(180, 80, 42, 0.08);
+  color: var(--rust-deep, #8f3d1f);
+}
+
+.locker__inputs {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 12px;
+}
+
+.locker__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.locker__field > span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink, #241f1a);
+}
+
+.locker__field input {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--line, rgba(36, 31, 26, 0.12));
+  border-radius: 12px;
+  background: var(--paper-soft, #fffdf8);
+  font-family: var(--font-body, "Inter", system-ui, sans-serif);
+  font-size: 14.5px;
+  color: var(--ink, #241f1a);
+}
+
+.locker__field input:focus {
+  outline: none;
+  border-color: var(--rust, #b4502a);
+  box-shadow: 0 0 0 4px rgba(180, 80, 42, 0.14);
+}
+
+.locker__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(85, 104, 74, 0.12);
+  font-size: 13.5px;
+  color: var(--sage, #55684a);
+}
+
+.locker__summary strong {
+  font-weight: 700;
+}
+
+.locker__summary span {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.locker__error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--danger, #b3261e);
+}
+
+@media (max-width: 560px) {
+  .locker__inputs {
+    grid-template-columns: 1fr;
+  }
+}

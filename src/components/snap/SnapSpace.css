@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600&family=Inter:wght@400;500;600&display=swap');
+
+/* ============================================================
+   Tokens — same paper/ink/rust/sage palette as the rest of
+   SnapWall, scoped locally so this tile works in any grid.
+   ============================================================ */
+.snap-space {
+  --paper: #f7f1e3;
+  --ink: #241f1a;
+  --ink-soft: #6b6055;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #6b7f5e;
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+}
+
+.snap-space:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------
+   Occupied — a filled instant print
+   ------------------------------------------------------------ */
+.snap-space--occupied {
+  background: var(--ink);
+  box-shadow: 0 6px 16px rgba(36, 31, 26, 0.18);
+}
+
+.snap-space--occupied:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(36, 31, 26, 0.28);
+}
+
+.snap-space__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(1.03) contrast(1.02);
+  transition: transform 0.35s ease, filter 0.25s ease;
+}
+
+.snap-space--occupied:hover .snap-space__image {
+  transform: scale(1.06);
+}
+
+.snap-space__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 12px;
+  background: linear-gradient(
+    to top,
+    rgba(23, 19, 16, 0.82) 0%,
+    rgba(23, 19, 16, 0.35) 45%,
+    transparent 75%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.snap-space--occupied:hover .snap-space__overlay,
+.snap-space--occupied:focus-visible .snap-space__overlay {
+  opacity: 1;
+}
+
+.snap-space__overlay span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--paper);
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* ------------------------------------------------------------
+   Available — an empty slot on the wall, waiting to be filled
+   ------------------------------------------------------------ */
+.snap-space--available {
+  background: rgba(180, 80, 42, 0.04);
+  border: 1.5px dashed rgba(180, 80, 42, 0.28);
+}
+
+.snap-space--available:hover {
+  background: rgba(180, 80, 42, 0.08);
+  border-color: var(--rust);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(180, 80, 42, 0.14);
+}
+
+.snap-space__available {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--rust-deep);
+}
+
+.snap-space__available span {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 500;
+  line-height: 1;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.snap-space--available:hover .snap-space__available span {
+  transform: scale(1.15) rotate(90deg);
+}
+
+.snap-space__available small {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------
+   Small tiles (dense grids) — trims the "+" and label to fit
+   ------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .snap-space {
+    border-radius: 7px;
+  }
+
+  .snap-space__available span {
+    font-size: 1.4rem;
+  }
+
+  .snap-space__available small {
+    font-size: 9.5px;
+  }
+
+  .snap-space__overlay {
+    padding: 7px 8px;
+  }
+
+  .snap-space__overlay span {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snap-space,
+  .snap-space__image,
+  .snap-space__available span {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Locked — a sealed Time Capsule (photo hidden until it opens)
+   ------------------------------------------------------------ */
+.snap-space--locked,
+.snap-space--locked:hover {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(247, 241, 227, 0.05) 0 10px,
+      transparent 10px 20px
+    ),
+    linear-gradient(160deg, #3a2f27 0%, #241f1a 100%);
+}
+
+.snap-space__locked {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  text-align: center;
+  color: var(--paper);
+}
+
+.snap-space__lock {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--rust);
+  color: var(--paper);
+  font-size: 22px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+}
+
+.snap-space__locked strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.snap-space__locked small {
+  font-size: 12px;
+  color: rgba(247, 241, 227, 0.72);
+}

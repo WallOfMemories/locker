@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600&family=Inter:wght@400;500;600&display=swap');
+
+/* ============================================================
+   Tokens — same paper/ink/rust/sage palette as the auth pages,
+   scoped locally so the navbar works standalone on every page.
+   ============================================================ */
+.navbar {
+  --paper: #f7f1e3;
+  --ink: #241f1a;
+  --ink-soft: #6b6055;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #6b7f5e;
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* CHANGED: sticky -> fixed. Always pinned to the top of the screen while
+     scrolling, regardless of parent height/overflow. A spacer (below) keeps
+     the layout the same. */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  width: 100%;
+  background: #ffffff; /* CHANGED: plain white (was translucent cream) */
+  border-bottom: 1px solid rgba(36, 31, 26, 0.08);
+  font-family: var(--font-body);
+}
+
+/* Takes the navbar's place in the flow: 64px bar + 1px border */
+.navbar-spacer {
+  height: 65px;
+}
+
+/* Full-bleed: no centered max-width box any more. The logo sticks to the
+   left edge and the user chip to the right edge (space-between below).
+   Overrides the global .container (width: min(100% - 32px, 1200px)). */
+.navbar .container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 var(--page-gutter, 24px); /* end padding: logo (left) + user chip (right) */
+}
+
+.navbar__inner {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* name on the left · account button on the right */
+  gap: 24px;
+}
+
+/* ------------------------------------------------------------
+   Logo
+   ------------------------------------------------------------ */
+.navbar__logo {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  transition: opacity 0.15s ease;
+}
+
+.navbar__logo span {
+  color: var(--rust);
+}
+
+.navbar__logo:hover {
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------
+   User chip
+   ------------------------------------------------------------ */
+.navbar__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(36, 31, 26, 0.1);
+  background: #fffdf8;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.navbar__user:hover {
+  border-color: var(--sage);
+  background: #fbf7ec;
+  transform: translateY(-1px);
+}
+
+.navbar__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.navbar__avatar--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--rust), var(--rust-deep));
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.navbar__greeting {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 720px) {
+  .navbar .container {
+    padding: 0 12px;
+  }
+
+  .navbar__inner {
+    height: 56px;
+  }
+
+  .navbar-spacer {
+    height: 57px; /* 56px bar + 1px border */
+  }
+
+  .navbar__greeting {
+    display: none;
+  }
+
+  .navbar__user {
+    padding: 3px;
+  }
+}
+
+/* Admin-only shortcut to the reports page */
+.navbar__admin {
+  margin-right: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(36, 31, 26, 0.1);
+  background: #241f1a;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}

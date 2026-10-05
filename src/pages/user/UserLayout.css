@@ -1,0 +1,341 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,600&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   Tokens — same rust/sage accents as the rest of SnapWall.
+   CHANGED: back to the original white / rust palette (the dark-green
+   --sb-* tokens are gone).
+   ============================================================ */
+.user-area {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --border: rgba(36, 31, 26, 0.08);
+  --ink: #241f1a;
+  --ink-soft: #867c70;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --rust-tint: rgba(180, 80, 42, 0.08);
+  --sage: #6b7f5e;
+  --danger: #c0392b;
+
+  /* Sidebar — original light palette (same as before the dark-green change) */
+  --sidebar-bg: #ffffff;
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --sb-w: 260px; /* sidebar width */
+  --nav-h: 65px; /* navbar: 64px + 1px border — sidebar starts right under it */
+
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+/* CHANGED: full-width grid, no outer padding/gap → the sidebar is flush
+   with the left edge and runs the full height under the navbar. */
+.user-layout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: var(--sb-w) 1fr;
+  align-items: start;
+}
+
+/* ------------------------------------------------------------
+   Sidebar
+   ------------------------------------------------------------ */
+/* CHANGED: position: fixed, anchored with top + bottom. The sidebar can never
+   scroll away, never gets a different height than the screen (the old
+   sticky + 100vh version could end short / jump), and has no inner
+   scrollbar. The grid's first column is just a spacer for it. */
+.user-sidebar {
+  position: fixed;
+  top: var(--nav-h);
+  bottom: 0;
+  left: 0;
+  width: var(--sb-w);
+  display: flex;
+  flex-direction: column;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  color: var(--ink-soft);
+  overflow: hidden;
+}
+
+/* Nav list */
+.user-sidebar__nav {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 12px; /* no overflow:auto — the sidebar never scrolls */
+}
+
+.user-sidebar__nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.user-sidebar__nav a svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.user-sidebar__nav a:hover {
+  background: var(--rust-tint);
+  color: var(--ink);
+}
+
+.user-sidebar__nav a.active {
+  background: var(--rust);
+  color: #fff;
+}
+
+/* Little accent tab on the far-left edge next to the active item */
+.user-sidebar__nav a.active::before {
+  content: "";
+  position: absolute;
+  left: -12px; /* = nav padding, so it touches the sidebar edge */
+  top: 50%;
+  width: 4px;
+  height: 26px;
+  transform: translateY(-50%);
+  border-radius: 0 4px 4px 0;
+  background: var(--rust);
+}
+
+/* Footer: user + logout, pinned to the bottom */
+.user-sidebar__foot {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.user-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.user-sidebar__avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--rust-tint);
+  color: var(--rust);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.user-sidebar__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-sidebar__who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-sidebar__name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-sidebar__email {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-sidebar__logout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--danger); /* original red logout */
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.user-sidebar__logout svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.user-sidebar__logout:hover {
+  background: rgba(192, 57, 43, 0.08);
+}
+
+/* ------------------------------------------------------------
+   Content area
+   CHANGED: no longer a bordered card — it's the page next to the
+   sidebar. Padding uses the same --page-gutter as the navbar ends.
+   ------------------------------------------------------------ */
+.user-content {
+  grid-column: 2;
+  min-width: 0; /* lets wide children shrink instead of stretching the grid */
+  min-height: calc(100vh - var(--nav-h));
+  background: var(--panel);
+  padding: 24px var(--page-gutter, 24px) 48px;
+}
+
+/* The user pages (Profile, MySnaps, EditProfile …) each wrap themselves in
+   <main class="page"><div class="container">. Inside this area those global
+   classes added a second layer of width/margin/padding + min-height.
+   Neutralise them. */
+.user-content .page {
+  min-height: 0;
+}
+
+.user-content .container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================
+   Short screens — tighten spacing instead of scrolling
+   ============================================================ */
+@media (min-width: 861px) and (max-height: 700px) {
+  .user-sidebar__nav {
+    gap: 2px;
+    padding: 10px 12px;
+  }
+
+  .user-sidebar__nav a {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+
+  .user-sidebar__foot {
+    gap: 6px;
+    padding: 10px 14px;
+  }
+
+  .user-sidebar__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .user-sidebar__logout {
+    padding: 6px 14px;
+  }
+}
+
+@media (min-width: 861px) and (max-height: 540px) {
+  .user-sidebar__nav a {
+    padding: 6px 14px;
+  }
+
+  .user-sidebar__user {
+    display: none; /* very short screens: keep only Log out */
+  }
+}
+
+/* ============================================================
+   Responsive — sidebar becomes a horizontal icon strip on top
+   ============================================================ */
+@media (max-width: 860px) {
+  .user-area {
+    --nav-h: 57px; /* mobile navbar: 56px + 1px border */
+  }
+
+  .user-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .user-sidebar {
+    position: static;
+    width: auto;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .user-sidebar__who,
+  .user-sidebar__nav a span,
+  .user-sidebar__logout span {
+    display: none;
+  }
+
+  .user-sidebar__nav {
+    flex: 0 0 auto;
+    flex-direction: row;
+    overflow: visible;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .user-sidebar__nav a {
+    flex-shrink: 0;
+    padding: 10px 12px;
+  }
+
+  .user-sidebar__nav a.active::before {
+    display: none;
+  }
+
+  .user-sidebar__foot {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+    padding: 8px 12px;
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+
+  .user-sidebar__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .user-sidebar__logout {
+    padding: 8px 10px;
+  }
+
+  .user-content {
+    grid-column: auto;
+    min-height: 0;
+    padding: 16px 14px 32px;
+  }
+}

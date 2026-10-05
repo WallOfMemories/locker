@@ -1,0 +1,581 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   SnapWall — Space modal
+   Classes are namespaced "snapmodal" so they can't collide with
+   any other stylesheet in the app.
+   ============================================================ */
+.snapmodal-backdrop {
+  --paper: #f7f1e3;
+  --paper-soft: #fffdf8;
+  --mat: #fbf8ef;
+  --ink: #241f1a;
+  --ink-soft: #6b6055;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #55684a;
+  --heart: #c0392b;
+  --line: rgba(36, 31, 26, 0.1);
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  background: rgba(23, 19, 16, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: snapmodalBackdropIn 0.2s ease;
+}
+
+@keyframes snapmodalBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ------------------------------------------------------------
+   Card
+   ------------------------------------------------------------ */
+.snapmodal {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  /* CHANGED: white card (was cream). Inside the card, "paper-soft" (frame,
+     close + share buttons) is white too so everything matches. */
+  --paper-soft: #ffffff;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  font-family: var(--font-body);
+  color: var(--ink);
+  animation: snapmodalIn 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180, 80, 42, 0.3) transparent;
+}
+
+.snapmodal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.snapmodal::-webkit-scrollbar-thumb {
+  background: rgba(180, 80, 42, 0.3);
+  border-radius: 999px;
+}
+
+@keyframes snapmodalIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.snapmodal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--paper-soft);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.snapmodal__close:hover {
+  background: var(--rust);
+  color: var(--paper);
+  transform: scale(1.08) rotate(90deg);
+}
+
+.snapmodal__title {
+  margin: 2px 0 18px;
+  padding: 0 26px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------
+   Occupied — the Snap, matted like an instant print
+   ------------------------------------------------------------ */
+.snapmodal__frame {
+  box-sizing: border-box;
+  width: calc(100% - 32px);
+  margin: 20px auto 0;
+  padding: 10px 10px 20px;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(36, 31, 26, 0.22);
+  transform: rotate(-0.8deg);
+}
+
+.snapmodal__image {
+  display: block;
+  width: 100%;
+  height: 310px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Row under the photo: username (left) · location pill (right) */
+.snapmodal__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 18px 0 10px;
+  padding: 0 26px;
+}
+
+.snapmodal__username {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+  max-width: 50%;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rust-deep);
+  letter-spacing: 0.01em;
+}
+
+.snapmodal__username::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rust);
+}
+
+.snapmodal__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 26px 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.snapmodal__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.snapmodal__action svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.snapmodal__action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(36, 31, 26, 0.14);
+}
+
+.snapmodal__action:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.snapmodal__action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.snapmodal__action--like {
+  color: var(--heart);
+  background: rgba(192, 57, 43, 0.1);
+}
+
+.snapmodal__action--save {
+  color: var(--rust-deep);
+  background: rgba(180, 80, 42, 0.1);
+}
+
+.snapmodal__action--share {
+  margin-left: auto;
+  color: var(--ink-soft);
+  background: var(--paper-soft);
+  border-color: var(--line);
+}
+
+/* ------------------------------------------------------------
+   Available — invite to create a Snap
+   ------------------------------------------------------------ */
+.snapmodal__available {
+  padding: 36px 26px 26px;
+  text-align: center;
+}
+
+/* Picture at the top: a piece of the wall fading out at the edges, with
+   this space as the highlighted tile. Shared by "available" and "sealed". */
+.snapmodal__preview {
+  width: 184px;
+  height: 184px;
+  margin: 0 auto 22px;
+}
+
+.snapmodal__preview-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 8px;
+  /* the neighbouring tiles fade away towards the edges */
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 50%, transparent 100%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 50%, transparent 100%);
+}
+
+/* the other Snaps on the wall — soft tints, no content */
+.snapmodal__tile {
+  border-radius: 10px;
+  background: rgba(36, 31, 26, 0.06);
+}
+
+.snapmodal__tile:nth-child(4n + 1) {
+  background: rgba(180, 80, 42, 0.13);
+}
+
+.snapmodal__tile:nth-child(4n + 2) {
+  background: rgba(85, 104, 74, 0.16);
+}
+
+.snapmodal__tile:nth-child(4n + 3) {
+  background: rgba(226, 180, 120, 0.32);
+}
+
+/* this space: a 2x2 tile in the middle of the grid */
+.snapmodal__spot {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(180, 80, 42, 0.55);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(180, 80, 42, 0.22),
+    0 0 0 6px rgba(180, 80, 42, 0.07);
+}
+
+.snapmodal__spot-icon {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--rust);
+  color: #ffffff;
+  font-size: 22px;
+  box-shadow: 0 8px 16px rgba(180, 80, 42, 0.35);
+}
+
+/* soft ring that pulses outwards from the "+" */
+.snapmodal__spot-icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--rust);
+  opacity: 0;
+  animation: snapmodalPulse 2.4s ease-out infinite;
+}
+
+@keyframes snapmodalPulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+/* sealed capsule: dark, solid tile with a lock — no pulse */
+.snapmodal__preview.is-locked .snapmodal__spot {
+  border: 2px solid #241f1a;
+  background: #241f1a;
+  box-shadow: 0 10px 26px rgba(36, 31, 26, 0.35),
+    0 0 0 6px rgba(36, 31, 26, 0.06);
+}
+
+.snapmodal__preview.is-locked .snapmodal__spot-icon::after {
+  display: none;
+}
+
+/* status pill */
+.snapmodal__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 12px;
+  border-radius: 999px;
+  background: rgba(85, 104, 74, 0.12);
+  color: var(--sage);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* green "live" dot with a soft pulsing ring */
+.snapmodal__badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: snapmodalDot 2s ease-out infinite;
+}
+
+@keyframes snapmodalDot {
+  0% { box-shadow: 0 0 0 0 rgba(85, 104, 74, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(85, 104, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(85, 104, 74, 0); }
+}
+
+/* "#006" — which space this is */
+.snapmodal__badge-id {
+  margin-left: 2px;
+  padding-left: 9px;
+  border-left: 1px solid rgba(85, 104, 74, 0.35);
+  font-style: normal;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.snapmodal__badge--sealed {
+  background: rgba(180, 80, 42, 0.1);
+  color: var(--rust-deep);
+}
+
+.snapmodal__badge--sealed::before {
+  animation: none;
+}
+
+.snapmodal__available .snapmodal__title {
+  margin: 16px 0 8px;
+  padding: 0;
+  font-size: 1.75rem;
+}
+
+.snapmodal__description {
+  margin: 0 auto 22px;
+  max-width: 280px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.snapmodal__price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.snapmodal__price-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.snapmodal__price-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.snapmodal__primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background: var(--rust);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(180, 80, 42, 0.35);
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.snapmodal__primary svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 0.15s ease;
+}
+
+.snapmodal__primary:hover {
+  background: var(--rust-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(180, 80, 42, 0.4);
+}
+
+.snapmodal__primary:hover svg {
+  transform: translateX(3px);
+}
+
+.snapmodal__primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ============================================================
+   Responsive — full-width bottom sheet on small screens
+   ============================================================ */
+@media (max-width: 560px) {
+  .snapmodal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .snapmodal {
+    max-width: none;
+    width: 100%;
+    max-height: 94vh;
+    border-radius: 24px 24px 0 0;
+    animation: snapmodalSheetIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .snapmodal__frame {
+    transform: rotate(0);
+  }
+
+  .snapmodal__image {
+    height: 250px;
+  }
+}
+
+@keyframes snapmodalSheetIn {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snapmodal-backdrop,
+  .snapmodal {
+    animation: none;
+  }
+
+  .snapmodal__frame {
+    transform: none;
+  }
+
+  .snapmodal__spot-icon::after,
+  .snapmodal__badge::before {
+    animation: none;
+  }
+}
+
+/* Location pill (published snaps) */
+.snapmodal__place {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
+  background: rgba(180, 80, 42, 0.1);
+  color: var(--rust-deep);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.snapmodal__place--link:hover {
+  background: rgba(180, 80, 42, 0.18);
+  transform: translateY(-1px);
+}
+
+.snapmodal__place-pin {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--rust);
+  color: #ffffff;
+}
+
+.snapmodal__place-pin svg {
+  width: 13px;
+  height: 13px;
+}
+
+.snapmodal__place-name {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Sealed Time Capsule view */
+.snapmodal__sealed-by {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rust-deep);
+}
+
+/* Right side of the username row: location pill + three-dots menu */
+.snapmodal__meta-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+/* Never let a long "Liked 128" label wrap or push buttons out of the card */
+.snapmodal__action {
+  white-space: nowrap;
+}

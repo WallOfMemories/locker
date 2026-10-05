@@ -1,0 +1,504 @@
+/* ============================================================
+   Profile page — Instagram-style: header, tabs, photo grid.
+   Namespaced "profile" / "ptile" / "pviewer". Uses the tokens
+   from .user-area (--ink, --ink-soft, --rust, --border) with
+   fallbacks.
+   ============================================================ */
+.profile {
+  width: 100%;
+  max-width: 935px;
+  margin: 0 auto;
+  color: var(--ink, #241f1a);
+}
+
+.profile__note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft, #867c70);
+}
+
+.profile__note--error {
+  color: #b3261e;
+}
+
+/* ---------------- header ---------------- */
+.profile__header {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  padding: 8px 24px 0;
+}
+
+.profile__avatar {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(180, 80, 42, 0.1);
+  color: var(--rust, #b4502a);
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.profile__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile__info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile__username {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.profile__name {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-soft, #867c70);
+}
+
+.profile__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+
+.profile__stats strong {
+  font-weight: 700;
+}
+
+.profile__bio {
+  margin: 0;
+  max-width: 520px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* two wide buttons under the header */
+.profile__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 28px 0 36px;
+}
+
+.profile__actions button {
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: #f1eeea;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink, #241f1a);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.profile__actions button:hover {
+  background: #e7e2db;
+}
+
+/* ---------------- tabs ---------------- */
+.profile__tabs {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  border-bottom: 1px solid var(--border, rgba(36, 31, 26, 0.1));
+  margin-bottom: 4px;
+}
+
+.profile__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -1px; /* active underline sits on the divider */
+  padding: 14px 4px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #867c70);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.profile__tab svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile__tab:hover {
+  color: var(--ink, #241f1a);
+}
+
+.profile__tab.is-active {
+  border-bottom-color: var(--ink, #241f1a);
+  color: var(--ink, #241f1a);
+}
+
+/* ---------------- grid ---------------- */
+.profile__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.ptile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  background: #ece8e1;
+  cursor: pointer;
+}
+
+.ptile > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ptile__blank {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* hover: caption + place over a soft gradient */
+.ptile__hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 14px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.62), transparent 60%);
+  color: #fff;
+  text-align: left;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.ptile:hover .ptile__hover,
+.ptile:focus-visible .ptile__hover {
+  opacity: 1;
+}
+
+.ptile__caption {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.ptile__place {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.ptile__place svg {
+  flex-shrink: 0;
+}
+
+/* locked capsule: blurred photo + lock + open date */
+.ptile.is-locked > img {
+  filter: blur(16px) brightness(0.6);
+  transform: scale(1.15);
+}
+
+.ptile__lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+}
+
+.ptile__lock svg {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 4px;
+}
+
+.ptile__lock strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ptile__lock small {
+  font-size: 11.5px;
+  opacity: 0.8;
+}
+
+/* ---------------- empty state ---------------- */
+.profile__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 16px 24px;
+  text-align: center;
+}
+
+.profile__empty-icon {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border: 2px solid var(--ink, #241f1a);
+  border-radius: 50%;
+}
+
+.profile__empty-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.profile__empty h2 {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.profile__empty p {
+  max-width: 360px;
+  margin: 0 0 20px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink-soft, #867c70);
+}
+
+.profile__empty button {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 10px;
+  background: var(--rust, #b4502a);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.profile__empty button:hover {
+  background: var(--rust-deep, #8f3d1f);
+}
+
+/* ---------------- viewer pop-up ---------------- */
+.pviewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 16, 12, 0.6);
+}
+
+.pviewer__card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 100%;
+  overflow-y: auto;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+.pviewer__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+}
+
+.pviewer__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #1b1713;
+}
+
+.pviewer__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pviewer__media.is-locked img {
+  filter: blur(18px) brightness(0.6);
+  transform: scale(1.15);
+}
+
+.pviewer__lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.pviewer__lock svg {
+  width: 52px;
+  height: 52px;
+}
+
+.pviewer__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px 20px;
+}
+
+.pviewer__author {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rust-deep, #8f3d1f);
+}
+
+.pviewer__caption {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.pviewer__when {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-soft, #867c70);
+}
+
+.pviewer__place {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-soft, #867c70);
+}
+
+.pviewer__place svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--rust, #b4502a);
+}
+
+/* ---------------- responsive ---------------- */
+@media (max-width: 700px) {
+  .profile__header {
+    gap: 20px;
+    padding: 0;
+  }
+
+  .profile__avatar {
+    width: 88px;
+    height: 88px;
+    font-size: 28px;
+  }
+
+  .profile__username {
+    font-size: 1.3rem;
+  }
+
+  .profile__actions {
+    margin: 20px 0 24px;
+  }
+
+  .profile__tabs {
+    gap: 0;
+    justify-content: space-around;
+  }
+
+  .profile__tab span {
+    display: none; /* icons only on small screens, like Instagram */
+  }
+
+  .profile__grid {
+    gap: 2px;
+  }
+
+  .ptile__hover {
+    display: none;
+  }
+}
+
+/* Owner-only badge: this Snap was hidden by an admin */
+.ptile__hidden {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(23, 19, 16, 0.78);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.ptile__hidden svg {
+  width: 12px;
+  height: 12px;
+}

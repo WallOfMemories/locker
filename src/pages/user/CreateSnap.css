@@ -1,0 +1,670 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   SnapWall — Create Snap page
+   Namespaced "createsnap" so nothing else in the app can
+   override it.
+   ============================================================ */
+.createsnap {
+  --paper: #f7f1e3;
+  /* CHANGED: fields, cards and pickers are plain white (they were a cream
+     tint that looked odd on the white page); "mat" panels are now a
+     neutral light grey instead of cream. */
+  --paper-soft: #ffffff;
+  --mat: #f6f6f5;
+  --ink: #241f1a;
+  --ink-soft: #6b6055;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #55684a;
+  --danger: #b3261e;
+  --line: rgba(36, 31, 26, 0.12);
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 64px;
+  background: #ffffff; /* CHANGED: plain white page (was cream gradient) */
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.createsnap *,
+.createsnap *::before,
+.createsnap *::after {
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------
+   Card
+   ------------------------------------------------------------ */
+.createsnap__card {
+  width: 100%;
+  max-width: 560px;
+  padding: 32px 32px 28px;
+  background: #ffffff; /* CHANGED: white to match the page */
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 30px 60px rgba(36, 31, 26, 0.12);
+  animation: createsnapIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes createsnapIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.createsnap__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 22px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.createsnap__back:hover {
+  color: var(--rust-deep);
+}
+
+.createsnap__header {
+  margin-bottom: 26px;
+}
+
+.createsnap__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(107, 127, 94, 0.16);
+  color: var(--sage);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.createsnap__chip strong {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.createsnap__title {
+  margin: 14px 0 6px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 2rem;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.createsnap__subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------
+   Error
+   ------------------------------------------------------------ */
+.createsnap__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(179, 38, 30, 0.08);
+  border: 1px solid rgba(179, 38, 30, 0.25);
+  color: var(--danger);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.createsnap__error svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+/* ------------------------------------------------------------
+   Form sections
+   ------------------------------------------------------------ */
+.createsnap__form {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.createsnap__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.createsnap__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.createsnap__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.createsnap__counter {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+/* visually hidden but still focusable */
+.createsnap__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+
+/* ------------------------------------------------------------
+   Photo — drop zone
+   ------------------------------------------------------------ */
+/* Drop zone: white card with soft "wall" tiles framing both sides and a clear
+   middle for the content. */
+.createsnap__drop {
+  position: relative;
+  isolation: isolate; /* keeps the tile layer behind the content */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 250px;
+  padding: 32px 24px;
+  border: 1.5px dashed rgba(180, 80, 42, 0.35);
+  border-radius: 22px;
+  background: #ffffff;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* Soft rounded tiles on the left and right, fading into the middle (and out
+   at every edge) so the text stays crisp and no half-tile touches the border. */
+.createsnap__drop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Crect x='5' y='5' width='50' height='50' rx='11' fill='rgb(180,80,42)' fill-opacity='.13'/%3E%3Crect x='65' y='5' width='50' height='50' rx='11' fill='rgb(85,104,74)' fill-opacity='.17'/%3E%3Crect x='125' y='5' width='50' height='50' rx='11' fill='rgb(226,180,120)' fill-opacity='.34'/%3E%3Crect x='185' y='5' width='50' height='50' rx='11' fill='rgb(36,31,26)' fill-opacity='.06'/%3E%3Crect x='5' y='65' width='50' height='50' rx='11' fill='rgb(36,31,26)' fill-opacity='.06'/%3E%3Crect x='65' y='65' width='50' height='50' rx='11' fill='rgb(226,180,120)' fill-opacity='.34'/%3E%3Crect x='125' y='65' width='50' height='50' rx='11' fill='rgb(180,80,42)' fill-opacity='.13'/%3E%3Crect x='185' y='65' width='50' height='50' rx='11' fill='rgb(85,104,74)' fill-opacity='.17'/%3E%3Crect x='5' y='125' width='50' height='50' rx='11' fill='rgb(226,180,120)' fill-opacity='.34'/%3E%3Crect x='65' y='125' width='50' height='50' rx='11' fill='rgb(180,80,42)' fill-opacity='.13'/%3E%3Crect x='125' y='125' width='50' height='50' rx='11' fill='rgb(36,31,26)' fill-opacity='.06'/%3E%3Crect x='185' y='125' width='50' height='50' rx='11' fill='rgb(85,104,74)' fill-opacity='.17'/%3E%3Crect x='5' y='185' width='50' height='50' rx='11' fill='rgb(85,104,74)' fill-opacity='.17'/%3E%3Crect x='65' y='185' width='50' height='50' rx='11' fill='rgb(36,31,26)' fill-opacity='.06'/%3E%3Crect x='125' y='185' width='50' height='50' rx='11' fill='rgb(226,180,120)' fill-opacity='.34'/%3E%3Crect x='185' y='185' width='50' height='50' rx='11' fill='rgb(180,80,42)' fill-opacity='.13'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: repeat;
+  -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 14%,
+      rgba(0, 0, 0, 0.7) 24%,
+      transparent 40%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.7) 76%,
+      #000 86%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 14%,
+      rgba(0, 0, 0, 0.7) 24%,
+      transparent 40%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.7) 76%,
+      #000 86%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%);
+  mask-composite: intersect;
+  transition: opacity 0.18s ease, transform 0.35s ease;
+}
+
+.createsnap__drop:hover,
+.createsnap__drop.is-dragging {
+  border-color: var(--rust);
+  background: #fffaf7;
+}
+
+.createsnap__drop:hover::before,
+.createsnap__drop.is-dragging::before {
+  transform: scale(1.05);
+}
+
+.createsnap__drop.is-dragging {
+  border-style: solid;
+  box-shadow: 0 0 0 5px rgba(180, 80, 42, 0.12);
+}
+
+.createsnap__file:focus-visible + .createsnap__drop,
+.createsnap__file:focus-visible + .createsnap__preview .createsnap__btn--soft {
+  outline: 2px solid var(--rust);
+  outline-offset: 3px;
+}
+
+/* white badge with a soft rust halo */
+.createsnap__drop-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--rust);
+  font-size: 30px;
+  box-shadow: 0 0 0 8px rgba(180, 80, 42, 0.09),
+    0 12px 26px rgba(180, 80, 42, 0.2);
+  transition: background-color 0.18s ease, color 0.18s ease,
+    transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.createsnap__drop:hover .createsnap__drop-icon,
+.createsnap__drop.is-dragging .createsnap__drop-icon {
+  background: var(--rust);
+  color: #ffffff;
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 10px rgba(180, 80, 42, 0.12),
+    0 16px 30px rgba(180, 80, 42, 0.32);
+}
+
+.createsnap__drop-title {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.createsnap__drop-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* "browse from your device" -> a solid, clearly clickable pill */
+.createsnap__drop-hint u {
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--rust);
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(180, 80, 42, 0.28);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.createsnap__drop:hover .createsnap__drop-hint u {
+  background: var(--rust-deep);
+  transform: translateY(-1px);
+}
+
+.createsnap__drop-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(107, 96, 85, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .createsnap__drop::before,
+  .createsnap__drop-icon,
+  .createsnap__drop-hint u {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Photo — preview
+   ------------------------------------------------------------ */
+.createsnap__preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 16px 18px;
+  border-radius: 18px;
+  background: var(--mat);
+  border: 1px solid var(--line);
+}
+
+.createsnap__polaroid {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 10px 22px;
+  background: var(--paper-soft);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(36, 31, 26, 0.22);
+  transform: rotate(-1.2deg);
+}
+
+.createsnap__polaroid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.createsnap__preview-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------------
+   Caption
+   ------------------------------------------------------------ */
+.createsnap__textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-soft);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 110px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.createsnap__textarea::placeholder {
+  color: rgba(107, 96, 85, 0.7);
+}
+
+.createsnap__textarea:focus {
+  outline: none;
+  border-color: var(--rust);
+  box-shadow: 0 0 0 4px rgba(180, 80, 42, 0.14);
+}
+
+/* ------------------------------------------------------------
+   Snap type — selectable cards
+   ------------------------------------------------------------ */
+.createsnap__types {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.createsnap__type {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper-soft);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.createsnap__type:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(36, 31, 26, 0.1);
+}
+
+.createsnap__type.is-active {
+  border-color: var(--rust);
+  background: rgba(180, 80, 42, 0.07);
+  box-shadow: 0 0 0 4px rgba(180, 80, 42, 0.1);
+}
+
+.createsnap__type:focus-within {
+  outline: 2px solid var(--rust);
+  outline-offset: 2px;
+}
+
+.createsnap__type-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.createsnap__type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: var(--mat);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 18px;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.createsnap__type.is-active .createsnap__type-icon {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: var(--paper);
+}
+
+.createsnap__type-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.createsnap__type-hint {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------ */
+.createsnap__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease,
+    box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.createsnap__btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.createsnap__btn--soft {
+  background: rgba(180, 80, 42, 0.1);
+  color: var(--rust-deep);
+}
+
+.createsnap__btn--soft:hover {
+  background: rgba(180, 80, 42, 0.18);
+}
+
+.createsnap__btn--ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink-soft);
+}
+
+.createsnap__btn--ghost:hover {
+  background: var(--mat);
+  color: var(--ink);
+}
+
+.createsnap__btn--primary {
+  padding: 14px 26px;
+  border-radius: 14px;
+  background: var(--rust);
+  color: var(--paper);
+  font-size: 14.5px;
+  box-shadow: 0 10px 22px rgba(180, 80, 42, 0.35);
+}
+
+.createsnap__btn--primary:hover:not(:disabled) {
+  background: var(--rust-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(180, 80, 42, 0.4);
+}
+
+.createsnap__btn--primary:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.createsnap__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.createsnap__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.createsnap__actions .createsnap__btn--ghost {
+  padding: 14px 22px;
+  border-radius: 14px;
+  font-size: 14.5px;
+}
+
+.createsnap__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(247, 241, 227, 0.4);
+  border-top-color: var(--paper);
+  border-radius: 50%;
+  animation: createsnapSpin 0.7s linear infinite;
+}
+
+@keyframes createsnapSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ------------------------------------------------------------
+   Empty state (no space selected)
+   ------------------------------------------------------------ */
+.createsnap__card--empty {
+  max-width: 420px;
+  margin-top: 8vh;
+  text-align: center;
+}
+
+.createsnap__card--empty .createsnap__title {
+  margin-top: 6px;
+}
+
+.createsnap__card--empty .createsnap__subtitle {
+  margin-bottom: 24px;
+}
+
+.createsnap__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--mat);
+  color: var(--rust-deep);
+  font-size: 28px;
+  box-shadow: 0 0 0 1.5px rgba(180, 80, 42, 0.3),
+    0 0 0 7px rgba(180, 80, 42, 0.06);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 560px) {
+  .createsnap {
+    padding: 16px 12px 40px;
+  }
+
+  .createsnap__card {
+    padding: 22px 18px 20px;
+    border-radius: 20px;
+  }
+
+  .createsnap__title {
+    font-size: 1.7rem;
+  }
+
+  .createsnap__types {
+    grid-template-columns: 1fr;
+  }
+
+  .createsnap__actions {
+    flex-direction: column-reverse;
+  }
+
+  .createsnap__actions .createsnap__btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .createsnap__card {
+    animation: none;
+  }
+
+  .createsnap__polaroid {
+    transform: none;
+  }
+
+  .createsnap__spinner {
+    animation-duration: 1.6s;
+  }
+}
