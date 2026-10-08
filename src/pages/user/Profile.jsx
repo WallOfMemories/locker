@@ -9,8 +9,6 @@ import {
   FiEyeOff,
   FiLock,
   FiMapPin,
-  FiX,
-  FiEdit2,
 } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
@@ -22,11 +20,11 @@ import {
 } from "../../services/snapService";
 import {
   formatShortDate,
-  formatUnlockDate,
   timeUntil,
 } from "../../utils/countdown";
 
 import EditSnapDialog from "../../components/snap/EditSnapDialog";
+import SnapViewer from "../../components/snap/SnapViewer";
 
 import "./Profile.css";
 
@@ -154,92 +152,6 @@ function SnapTile({ snap, locked, now, onOpen }) {
         </span>
       )}
     </button>
-  );
-}
-
-// ---------------- pop-up with the bigger picture ----------------
-function SnapViewer({ snap, locked, now, ownerName, onClose, onEdit }) {
-  useEffect(() => {
-    function handleKey(event) {
-      if (event.key === "Escape") onClose();
-    }
-
-    document.addEventListener("keydown", handleKey);
-
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  const author = snap.username || ownerName;
-
-  return (
-    <div
-      className="pviewer"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-      <div className="pviewer__card" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          className="pviewer__close"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <FiX />
-        </button>
-
-        <div className={`pviewer__media ${locked ? "is-locked" : ""}`}>
-          {snap.imageUrl && <img src={snap.imageUrl} alt={snap.caption || ""} />}
-
-          {locked && (
-            <span className="pviewer__lock">
-              <FiLock />
-            </span>
-          )}
-        </div>
-
-        <div className="pviewer__body">
-          {author && <p className="pviewer__author">@{author}</p>}
-
-          {locked ? (
-            <p className="pviewer__when">
-              Sealed until <strong>{formatUnlockDate(snap.unlockAt)}</strong>{" "}
-              ({timeUntil(snap.unlockAt, now)}). It becomes public to
-              everyone automatically.
-            </p>
-          ) : (
-            <>
-              {snap.caption && (
-                <p className="pviewer__caption">{snap.caption}</p>
-              )}
-
-              {snap.type === "capsule" && snap.unlockAt && (
-                <p className="pviewer__when">
-                  Opened {formatUnlockDate(snap.unlockAt)}
-                </p>
-              )}
-            </>
-          )}
-
-          {snap.location?.name && (
-            <p className="pviewer__place">
-              <FiMapPin />
-              <span>
-                {snap.location.name}
-                {snap.location.address ? `, ${snap.location.address}` : ""}
-              </span>
-            </p>
-          )}
-
-          {onEdit && (
-            <button type="button" className="pviewer__edit" onClick={onEdit}>
-              <FiEdit2 />
-              Edit
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -397,8 +309,10 @@ function Profile() {
 
   // Edit is only for my own Snaps / Time Capsules (not Liked / Saved), and
   // not for ones the moderators hid.
+  const isOwnTab = tab === "snaps" || tab === "capsules";
+
   const canEditViewing =
-    (tab === "snaps" || tab === "capsules") &&
+    isOwnTab &&
     viewing &&
     viewing.status !== "hidden";
 
@@ -414,6 +328,23 @@ function Profile() {
     );
 
     setEditing(null);
+  }
+
+  // Keep the Liked / Saved tabs in step with what happens in the pop-up:
+  // un-liking removes the tile; liking marks the tab to reload next time.
+  function syncList(listKey, snap, on) {
+    if (on) {
+      requested.current.delete(listKey);
+      return;
+    }
+
+    setLists((prev) => ({
+      ...prev,
+      [listKey]: {
+        ...prev[listKey],
+        items: prev[listKey].items.filter((item) => item.id !== snap.id),
+      },
+    }));
   }
 
   const activeTab = TABS.find((t) => t.key === tab);
@@ -522,11 +453,15 @@ function Profile() {
 
       {viewing && (
         <SnapViewer
+          key={viewing.id}
           snap={viewing}
           now={now}
-          ownerName={username}
+          ownerName={isOwnTab ? username : ""}
+          ownerPhoto={isOwnTab ? profile.photoURL : ""}
           locked={isLockedNow(viewing, now)}
           onClose={() => setViewing(null)}
+          onLikeChange={(snap, on) => syncList("liked", snap, on)}
+          onSaveChange={(snap, on) => syncList("saved", snap, on)}
           onEdit={canEditViewing ? () => setEditing(viewing) : undefined}
         />
       )}

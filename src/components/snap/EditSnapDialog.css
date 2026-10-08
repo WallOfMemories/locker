@@ -1,5 +1,18 @@
 /* Edit Snap / Time Capsule pop-up + the Edit button in the profile viewer */
 
+/* CHANGED: palette tokens copied from the login page (rust/brown family).
+   Scoped to both selectors because .pviewer__edit lives outside .editsnap. */
+.editsnap,
+.pviewer__edit {
+  --rust: #b4502a;        /* replaces purple #6c5ce7 */
+  --rust-deep: #8f3d1f;   /* hover / pressed state */
+  --paper: #f7f1e3;       /* warm off-white used in login card */
+  --ink: #241f1a;         /* warm near-black, replaces #111 */
+  --ink-soft: #6b6055;    /* warm grey, replaces #777 / #666 */
+  --line: rgba(36, 31, 26, 0.14); /* border colour used by login inputs */
+  --error: #b3261e;
+}
+
 .editsnap {
   position: fixed;
   inset: 0;
@@ -8,7 +21,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(23, 19, 16, 0.6); /* CHANGED: warm dark overlay (login --wall-deep) instead of pure black */
 }
 
 .editsnap__card {
@@ -19,8 +32,8 @@
   max-height: calc(100vh - 32px);
   overflow: hidden;
   border-radius: 16px;
-  background: #fff;
-  color: #111;
+  background: #fffdf8;     /* CHANGED: warm white, same as login inputs */
+  color: var(--ink);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -29,7 +42,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 18px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--line); /* CHANGED: was #eee */
 }
 
 .editsnap__head h2 {
@@ -50,8 +63,14 @@
   cursor: pointer;
 }
 
-.editsnap__close:hover {
-  background: #f1f1f1;
+/* FIX: only react to hover when enabled (close is disabled while saving) */
+.editsnap__close:hover:not(:disabled) {
+  background: rgba(180, 80, 42, 0.1); /* CHANGED: light brown tint instead of grey */
+}
+
+.editsnap__close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .editsnap__body {
@@ -68,37 +87,42 @@
   justify-content: space-between;
   margin-bottom: 6px;
   font-size: 0.8rem;
-  color: #777;
+  color: var(--ink-soft); /* CHANGED: was #777 */
 }
 
 .editsnap__label-row label,
 .editsnap__label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #111;
+  color: var(--ink);
 }
 
 .editsnap__section textarea {
   width: 100%;
   box-sizing: border-box;
   padding: 10px 12px;
-  border: 1px solid #ddd;
+  border: 1.5px solid var(--line); /* CHANGED: matches login input border */
   border-radius: 10px;
+  background: #fffdf8;
+  color: var(--ink);
   font: inherit;
   resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.2s ease;
 }
 
+/* CHANGED: purple outline -> rust border + soft glow (same as login inputs) */
 .editsnap__section textarea:focus {
-  outline: 2px solid #6c5ce7;
-  outline-offset: 1px;
+  outline: none;
+  border-color: var(--rust);
+  box-shadow: 0 0 0 3px rgba(180, 80, 42, 0.16);
 }
 
 .editsnap__note {
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #f6f6f8;
-  color: #666;
+  background: var(--paper); /* CHANGED: was cool grey #f6f6f8 */
+  color: var(--ink-soft);
   font-size: 0.85rem;
 }
 
@@ -106,8 +130,9 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #fdecec;
-  color: #b3261e;
+  background: rgba(179, 38, 30, 0.08); /* CHANGED: same error tint as login */
+  border: 1px solid rgba(179, 38, 30, 0.25);
+  color: var(--error);
   font-size: 0.85rem;
 }
 
@@ -116,24 +141,37 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 14px 18px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--line); /* CHANGED: was #eee */
 }
 
 .editsnap__btn {
   padding: 9px 18px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
-  color: #111;
+  background: #fffdf8;
+  color: var(--ink);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
+/* NEW: hover for the secondary (Cancel) button */
+.editsnap__btn:hover:not(:disabled) {
+  background: #fbf7ec;
+}
+
+/* CHANGED: purple -> rust */
 .editsnap__btn--primary {
-  border-color: #6c5ce7;
-  background: #6c5ce7;
-  color: #fff;
+  border-color: var(--rust);
+  background: var(--rust);
+  color: var(--paper);
+}
+
+/* NEW: the primary button had no hover state; darker rust like the login button */
+.editsnap__btn--primary:hover:not(:disabled) {
+  border-color: var(--rust-deep);
+  background: var(--rust-deep);
 }
 
 .editsnap__btn:disabled {
@@ -148,16 +186,18 @@
   gap: 6px;
   margin-top: 14px;
   padding: 8px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
-  color: #111;
+  background: #fffdf8;
+  color: var(--ink);
   font: inherit;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .pviewer__edit:hover {
-  background: #f4f4f6;
+  background: #fbf7ec;       /* CHANGED: warm hover instead of cool grey */
+  border-color: var(--rust); /* NEW: brown accent on hover */
 }

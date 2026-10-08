@@ -433,6 +433,8 @@
 
 .btn-primary.is-loading .btn-primary__shutter {
   display: inline-block;
+  margin-right: 10px; /* space between the spinner and "Logging in…" */
+  vertical-align: -2px;
   animation: spin 0.7s linear infinite;
 }
 

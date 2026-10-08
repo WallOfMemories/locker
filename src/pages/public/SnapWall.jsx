@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import SnapWallCanvas from "../../components/snap/SnapWallCanvas";
 import SpaceDetails from "../../components/snap/SpaceDetails";
@@ -12,6 +13,10 @@ function SnapWall() {
   const [spaces, setSpaces] = useState([]);
   const [spacePrice, setSpacePrice] = useState(0);
   const [selectedSpace, setSelectedSpace] = useState(null);
+
+  // Shared links look like /?snap=<id> and open that Snap straight away.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const linkedSnapId = searchParams.get("snap");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -44,6 +49,14 @@ function SnapWall() {
         if (cancelled) return;
 
         setSpaces(spacesData);
+
+        // Opened from a shared link? Show that Snap right away.
+        const linked = new URLSearchParams(window.location.search).get("snap");
+        const match = linked
+          ? spacesData.find((space) => space.snapId === linked)
+          : null;
+
+        if (match) setSelectedSpace(match);
         setSpacePrice(settingsData.spacePrice);
       } catch (error) {
         console.error("Failed to load SnapWall:", error);
@@ -62,6 +75,12 @@ function SnapWall() {
       cancelled = true;
     };
   }, [reloadKey]);
+
+  function closeDetails() {
+    setSelectedSpace(null);
+
+    if (linkedSnapId) setSearchParams({}, { replace: true });
+  }
 
   return (
     <main className="snapwall-page">
@@ -92,7 +111,7 @@ function SnapWall() {
       <SpaceDetails
         space={selectedSpace}
         price={spacePrice}
-        onClose={() => setSelectedSpace(null)}
+        onClose={closeDetails}
       />
     </main>
   );
