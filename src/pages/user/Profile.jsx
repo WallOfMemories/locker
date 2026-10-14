@@ -121,10 +121,15 @@ function SnapTile({ snap, locked, now, onOpen }) {
         <span className="ptile__blank" />
       )}
 
-      {snap.status === "hidden" && (
+      {/* CHANGED: also shown for Snaps the owner hid themselves */}
+      {(snap.status === "hidden" || snap.ownerHidden) && (
         <span
           className="ptile__hidden"
-          title="Hidden by SnapWall moderators — only you can see it"
+          title={
+            snap.status === "hidden"
+              ? "Hidden by SnapWall moderators — only you can see it"
+              : "Hidden by you — only you can see it"
+          }
         >
           <FiEyeOff />
           Hidden
@@ -330,6 +335,44 @@ function Profile() {
     setEditing(null);
   }
 
+  // NEW: I hid / unhid one of my Snaps in the pop-up.
+  function handleHiddenChange(snap, hidden) {
+    const patch = hidden
+      ? { ownerHidden: true, ownerHiddenAt: new Date().toISOString() }
+      : { ownerHidden: false, ownerHiddenAt: null };
+
+    setMySnaps((prev) =>
+      prev.map((item) => (item.id === snap.id ? { ...item, ...patch } : item))
+    );
+
+    setViewing((prev) =>
+      prev && prev.id === snap.id ? { ...prev, ...patch } : prev
+    );
+
+    // A hidden Snap drops out of Liked / Saved lists (mine included, if I
+    // liked my own), so reload them the next time they are opened.
+    requested.current.delete("liked");
+    requested.current.delete("saved");
+  }
+
+  // NEW: I deleted one of my Snaps. Its space is free again.
+  function handleDeleted(snap) {
+    setMySnaps((prev) => prev.filter((item) => item.id !== snap.id));
+
+    setLists((prev) => ({
+      liked: {
+        ...prev.liked,
+        items: prev.liked.items.filter((item) => item.id !== snap.id),
+      },
+      saved: {
+        ...prev.saved,
+        items: prev.saved.items.filter((item) => item.id !== snap.id),
+      },
+    }));
+
+    setViewing(null);
+  }
+
   // Keep the Liked / Saved tabs in step with what happens in the pop-up:
   // un-liking removes the tile; liking marks the tab to reload next time.
   function syncList(listKey, snap, on) {
@@ -463,6 +506,9 @@ function Profile() {
           onLikeChange={(snap, on) => syncList("liked", snap, on)}
           onSaveChange={(snap, on) => syncList("saved", snap, on)}
           onEdit={canEditViewing ? () => setEditing(viewing) : undefined}
+          canManage={isOwnTab}
+          onHiddenChange={handleHiddenChange}
+          onDeleted={handleDeleted}
         />
       )}
 

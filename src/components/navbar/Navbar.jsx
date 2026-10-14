@@ -26,9 +26,11 @@ function Navbar() {
         </Link>
 
         <div className="navbar__actions">
+          {/* CHANGED: the admin link used to say "Reports". The admin area now
+              has its own sidebar (Dashboard, Reports, Payments, Wall Size). */}
           {profile?.role === "admin" && (
-            <Link to="/admin/reports" className="navbar__admin">
-              Reports
+            <Link to="/admin/dashboard" className="navbar__admin">
+              Admin
             </Link>
           )}
 

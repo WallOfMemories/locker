@@ -7,6 +7,9 @@ import {
   FiShare2,
   FiCheck,
   FiClock,
+  FiEye,
+  FiEyeOff,
+  FiTrash2,
 } from "react-icons/fi";
 import {
   FaHeart,
@@ -22,6 +25,8 @@ import {
   getSnapSaveInfo,
   saveSnap,
   unsaveSnap,
+  setSnapHidden,
+  deleteSnap,
 } from "../../services/snapService";
 import { formatUnlockDate, timeUntil } from "../../utils/countdown";
 
@@ -68,8 +73,11 @@ async function copyText(text) {
  *
  * - Like + Save are optimistic: the UI flips instantly and rolls back if
  *   the server refuses.
- * - Sealed Time Capsules and moderator-hidden Snaps have no actions
+ * - Sealed Time Capsules and hidden Snaps have no Like / Save / Share
  *   (the server rejects them too).
+ * - NEW: the owner (canManage) can Hide / Unhide their Snap and Delete it.
+ *   Hiding keeps the space; deleting frees the space and is NOT refunded.
+ *   A Snap the moderators hid can't be un-hidden by its owner.
  */
 function SnapViewer({
   snap,
@@ -81,14 +89,26 @@ function SnapViewer({
   onEdit,
   onLikeChange,
   onSaveChange,
+  canManage, // NEW: this is my own Snap
+  onHiddenChange, // NEW: (snap, hidden) after I hide / unhide it
+  onDeleted, // NEW: (snap) after I delete it
 }) {
-  const hidden = snap.status === "hidden";
+  // Hidden by the moderators (only they can undo it) vs hidden by me.
+  const modHidden = snap.status === "hidden";
+  const ownerHidden = snap.ownerHidden === true;
+  const hidden = modHidden || ownerHidden;
   const canInteract = !locked && !hidden;
 
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [saved, setSaved] = useState(false);
-  const [busy, setBusy] = useState({ like: false, save: false });
+  const [busy, setBusy] = useState({
+    like: false,
+    save: false,
+    hide: false, // NEW
+    remove: false, // NEW
+  });
+  const [confirmingDelete, setConfirmingDelete] = useState(false); // NEW
   const [toast, setToast] = useState(null);
   const [burst, setBurst] = useState(0);
 
@@ -191,6 +211,46 @@ function SnapViewer({
       showToast(err.message || "Couldn't update saved.", "error");
     } finally {
       setBusy((b) => ({ ...b, save: false }));
+    }
+  }
+
+  // NEW: hide / show my own Snap
+  async function handleToggleHidden() {
+    if (busy.hide) return;
+
+    const next = !ownerHidden;
+
+    setBusy((b) => ({ ...b, hide: true }));
+
+    try {
+      await setSnapHidden(snap.id, next);
+
+      onHiddenChange?.(snap, next);
+      showToast(
+        next ? "Hidden — only you can see it" : "Visible on SnapWall again"
+      );
+    } catch (err) {
+      showToast(err.message || "Couldn't update this Snap.", "error");
+    } finally {
+      setBusy((b) => ({ ...b, hide: false }));
+    }
+  }
+
+  // NEW: delete my own Snap (the space is freed, no refund)
+  async function handleDelete() {
+    if (busy.remove) return;
+
+    setBusy((b) => ({ ...b, remove: true }));
+
+    try {
+      await deleteSnap(snap.id);
+
+      // The parent removes it and closes this pop-up.
+      onDeleted?.(snap);
+    } catch (err) {
+      setConfirmingDelete(false);
+      showToast(err.message || "Couldn't delete this Snap.", "error");
+      setBusy((b) => ({ ...b, remove: false }));
     }
   }
 
@@ -299,9 +359,17 @@ function SnapViewer({
               </>
             )}
 
-            {hidden && (
+            {modHidden && (
               <p className="sv__notice">
                 Hidden by SnapWall moderators — only you can see this Snap.
+              </p>
+            )}
+
+            {/* NEW: hidden by me */}
+            {ownerHidden && !modHidden && (
+              <p className="sv__notice">
+                You've hidden this Snap — only you can see it. Your space is
+                still yours. Unhide it to show it on SnapWall again.
               </p>
             )}
 
@@ -374,6 +442,78 @@ function SnapViewer({
                 Edit {snap.type === "capsule" ? "capsule" : "snap"}
               </button>
             )}
+
+            {/* ---------- NEW: owner controls ---------- */}
+            {canManage &&
+              (confirmingDelete ? (
+                <div className="sv__confirm" role="alertdialog">
+                  <p>
+                    <strong>
+                      Delete this {snap.type === "capsule" ? "capsule" : "Snap"}
+                      ?
+                    </strong>{" "}
+                    Your space will be freed for someone else to take.{" "}
+                    <strong>You won't get a refund</strong>, and this can't be
+                    undone.
+                  </p>
+
+                  <div className="sv__manage">
+                    <button
+                      type="button"
+                      className="sv__btn"
+                      onClick={() => setConfirmingDelete(false)}
+                      disabled={busy.remove}
+                    >
+                      <span className="sv__label">Keep it</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="sv__btn sv__btn--danger is-on"
+                      onClick={handleDelete}
+                      disabled={busy.remove}
+                    >
+                      <span className="sv__icon">
+                        <FiTrash2 />
+                      </span>
+                      <span className="sv__label">
+                        {busy.remove ? "Deleting…" : "Yes, delete"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="sv__manage">
+                  {/* A sealed capsule is already private, and a Snap the
+                      moderators hid can't be changed by its owner. */}
+                  {!modHidden && !locked && (
+                    <button
+                      type="button"
+                      className="sv__btn"
+                      onClick={handleToggleHidden}
+                      disabled={busy.hide}
+                    >
+                      <span className="sv__icon">
+                        {ownerHidden ? <FiEye /> : <FiEyeOff />}
+                      </span>
+                      <span className="sv__label">
+                        {ownerHidden ? "Unhide" : "Hide"}
+                      </span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className="sv__btn sv__btn--danger"
+                    onClick={() => setConfirmingDelete(true)}
+                  >
+                    <span className="sv__icon">
+                      <FiTrash2 />
+                    </span>
+                    <span className="sv__label">Delete</span>
+                  </button>
+                </div>
+              ))}
           </footer>
         </div>
 

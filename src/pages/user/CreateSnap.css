@@ -668,3 +668,58 @@
     animation-duration: 1.6s;
   }
 }
+/* ============================================================
+   NEW — payment box (above the Post / Lock button)
+   ============================================================ */
+.createsnap__pay {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--mat);
+}
+
+.createsnap__pay-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--rust);
+  font-size: 22px;
+}
+
+.createsnap__pay-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.createsnap__pay-text strong {
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.createsnap__pay-text span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.createsnap__pay.is-paid {
+  border-color: rgba(85, 104, 74, 0.35);
+  background: rgba(85, 104, 74, 0.08);
+}
+
+.createsnap__pay.is-paid .createsnap__pay-icon {
+  color: var(--sage);
+}
+
+.createsnap__back:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

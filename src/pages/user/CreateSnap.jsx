@@ -9,9 +9,21 @@ import {
   HiClock,
   HiExclamationCircle,
   HiX,
+  HiCreditCard,
+  HiCheckCircle,
 } from "react-icons/hi";
 
-import { uploadSnapImage } from "../../services/storageService";
+import {
+  uploadSnapImage,
+  validateImage,
+} from "../../services/storageService";
+import {
+  createSpaceOrder,
+  releaseSpace,
+  verifyPayment,
+} from "../../services/paymentService";
+import { getSnapWallSettings } from "../../services/settingsApi";
+import { loadRazorpay } from "../../utils/loadRazorpay";
 import { useAuth } from "../../context/AuthContext";
 import LocationPicker from "../../components/snap/LocationPicker";
 import LockerPicker, {
@@ -40,8 +52,22 @@ const SNAP_TYPES = [
 // same limit in backend snapController.js.
 const MAX_CAPTION = 100;
 
+// CHANGED: was a hard-coded "http://localhost:5000" below, which ignored
+// VITE_API_BASE_URL (so posting would break as soon as the app is deployed).
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+// What the button says while each step is running.
+const STAGE_LABELS = {
+  order: "Preparing payment...",
+  paying: "Complete the payment...",
+  confirming: "Confirming payment...",
+  uploading: "Uploading photo...",
+  posting: "Posting...",
+};
+
 function CreateSnap() {
-  const { currentUser } = useAuth();
+  const { currentUser, profile } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -51,7 +77,8 @@ function CreateSnap() {
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [snapType, setSnapType] = useState("post");
-  const [uploading, setUploading] = useState(false);
+  // NEW: which step of "pay -> upload -> post" is running ("idle" = none)
+  const [stage, setStage] = useState("idle");
   const [error, setError] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [dragging, setDragging] = useState(false);
@@ -60,12 +87,44 @@ function CreateSnap() {
   const [snapLocation, setSnapLocation] = useState(null);
   const [unlockAt, setUnlockAt] = useState(""); // "YYYY-MM-DDTHH:mm", local time
 
+  // NEW — payment
+  // price: what a space costs (display only; the server decides the amount)
+  // paymentId: set once the space is PAID FOR. From then on the person is
+  //   never charged again for this Snap — if a later step fails (network,
+  //   upload...) pressing the button again just finishes posting. It can also
+  //   arrive from Payment History ("Finish posting").
+  const [price, setPrice] = useState(null);
+  const [paymentId, setPaymentId] = useState(location.state?.paymentId || "");
+  const pendingVerifyRef = useRef(null); // paid in Razorpay, not yet confirmed by our server
+  const uploadedRef = useRef(null); // { file, downloadURL, storagePath } — never upload twice
+
+  const busy = stage !== "idle";
+
   // Free the preview URL when it changes or the page unmounts
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
+
+  // NEW: the price shown on the button / payment box
+  useEffect(() => {
+    let cancelled = false;
+
+    getSnapWallSettings()
+      .then((settings) => {
+        const value = Number(settings?.spacePrice);
+
+        if (!cancelled && value > 0) setPrice(value);
+      })
+      .catch(() => {
+        // Not fatal: the button just won't show an amount.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!selectedSpace) {
     return (
@@ -92,6 +151,115 @@ function CreateSnap() {
         </div>
       </main>
     );
+  }
+
+  // NEW: leaving after paying would strand the payment — warn first.
+  // (It isn't lost: Payment History has a "Finish posting" button.)
+  function handleLeave() {
+    if (
+      paymentId &&
+      !window.confirm(
+        "You've already paid for this space. If you leave now your Snap won't be posted yet. You can finish it later from Payment History. Leave anyway?"
+      )
+    ) {
+      return;
+    }
+
+    navigate("/wall");
+  }
+
+  // NEW: pays for the space with Razorpay.
+  //   1. our server checks the space is free, holds it, creates the order
+  //   2. Razorpay's window opens
+  //   3. our server verifies the payment and records it
+  // Resolves to the verified payment id, or null if the person closed the
+  // window. Throws if something broke.
+  async function collectPayment() {
+    // A payment that went through earlier but couldn't be confirmed
+    // (e.g. the connection dropped): confirm THAT one — never charge twice.
+    if (pendingVerifyRef.current) {
+      setStage("confirming");
+
+      const verified = await verifyPayment(pendingVerifyRef.current);
+
+      pendingVerifyRef.current = null;
+
+      return verified.paymentId;
+    }
+
+    setStage("order");
+
+    const [{ order, keyId }, Razorpay] = await Promise.all([
+      createSpaceOrder(selectedSpace.id),
+      loadRazorpay(),
+    ]);
+
+    return new Promise((resolve, reject) => {
+      let succeeded = false;
+
+      const checkout = new Razorpay({
+        key: keyId,
+        order_id: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        name: "SnapWall",
+        description: `Space ${selectedSpace.id}`,
+        prefill: {
+          name: profile?.displayName || currentUser?.displayName || "",
+          email: currentUser?.email || "",
+        },
+        theme: { color: "#b4502a" },
+
+        // Paid in the window — now our server must confirm it.
+        handler: async (response) => {
+          succeeded = true;
+
+          const payload = {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          };
+
+          try {
+            setStage("confirming");
+            setError("");
+
+            const verified = await verifyPayment(payload);
+
+            resolve(verified.paymentId);
+          } catch {
+            // Keep it, so the next press confirms this payment again.
+            pendingVerifyRef.current = payload;
+
+            reject(
+              new Error(
+                "Your payment went through, but we couldn't confirm it yet. Press the button again — you won't be charged twice."
+              )
+            );
+          }
+        },
+
+        modal: {
+          // Closed the window without paying: free the space for others.
+          ondismiss: () => {
+            if (succeeded) return;
+
+            releaseSpace(selectedSpace.id).catch(() => {});
+            resolve(null);
+          },
+        },
+      });
+
+      // A card/UPI attempt failed. The window stays open so they can retry.
+      checkout.on("payment.failed", (response) => {
+        setError(
+          response?.error?.description || "Payment failed. Please try again."
+        );
+      });
+
+      setStage("paying");
+      checkout.open();
+    });
   }
 
   function applyFile(file) {
@@ -155,6 +323,15 @@ function CreateSnap() {
       return;
     }
 
+    // NEW: check the photo NOW — the upload happens after payment, so a
+    // photo that is too big must be caught before any money moves.
+    try {
+      validateImage(image);
+    } catch (err) {
+      setError(err.message);
+      return;
+    }
+
     // NEW: the locker needs a valid future time
     let unlockDate = null;
 
@@ -174,15 +351,48 @@ function CreateSnap() {
       }
     }
 
+    // The id of a payment that has already gone through (this attempt or an
+    // earlier one). If anything below fails, the person is told their
+    // payment is safe and that pressing the button again won't charge them.
+    let paidId = paymentId;
+
     try {
-      setUploading(true);
       setError("");
 
-      const uploadResult = await uploadSnapImage(image, currentUser.uid);
+      // ---------- 1. Pay ----------
+      if (!paidId) {
+        paidId = await collectPayment();
+
+        if (!paidId) {
+          // Closed the window. Keep a "payment failed" message if there is one.
+          setError(
+            (previous) =>
+              previous ||
+              "Payment cancelled — your Snap hasn't been posted. You can try again."
+          );
+          return;
+        }
+
+        setPaymentId(paidId);
+      }
+
+      // ---------- 2. Upload the photo (once) ----------
+      setStage("uploading");
+
+      if (!uploadedRef.current || uploadedRef.current.file !== image) {
+        const uploadResult = await uploadSnapImage(image, currentUser.uid);
+
+        uploadedRef.current = { file: image, ...uploadResult };
+      }
+
+      const uploaded = uploadedRef.current;
+
+      // ---------- 3. Post ----------
+      setStage("posting");
 
       const idToken = await getIdToken(currentUser);
 
-      const response = await fetch("http://localhost:5000/api/snaps", {
+      const response = await fetch(`${API_BASE_URL}/api/snaps`, {
         method: "POST",
 
         headers: {
@@ -192,33 +402,49 @@ function CreateSnap() {
 
         body: JSON.stringify({
           spaceId: selectedSpace.id,
-          imageUrl: uploadResult.downloadURL,
-          storagePath: uploadResult.storagePath,
+          imageUrl: uploaded.downloadURL,
+          storagePath: uploaded.storagePath,
           caption,
           snapType,
-
-          // NEW
           location: snapLocation,
           unlockAt: unlockDate ? unlockDate.toISOString() : undefined,
+
+          // NEW: the server only accepts a verified payment for this space
+          paymentId: paidId,
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to create Snap.");
-      }
+        const failure = new Error(data.message || "Failed to create Snap.");
 
-      console.log("Snap created:", data);
+        failure.refunded = data.refunded === true;
+
+        throw failure;
+      }
 
       // A locked capsule isn't on the wall yet — show it in Time Capsules.
       navigate(snapType === "capsule" ? "/profile?tab=capsules" : "/wall");
-    } catch (error) {
-      console.error("Create Snap failed:", error);
+    } catch (err) {
+      console.error("Create Snap failed:", err);
 
-      setError(error.message || "Failed to create Snap.");
+      const message = err.message || "Failed to create Snap.";
+
+      if (err.refunded) {
+        // The space was taken and the money has been returned automatically:
+        // there is nothing left to retry.
+        setPaymentId("");
+        setError(message);
+      } else if (paidId && !pendingVerifyRef.current) {
+        setError(
+          `${message} Your payment is safe — press the button again to finish. You won't be charged twice.`
+        );
+      } else {
+        setError(message);
+      }
     } finally {
-      setUploading(false);
+      setStage("idle");
     }
   }
 
@@ -228,7 +454,8 @@ function CreateSnap() {
         <button
           type="button"
           className="createsnap__back"
-          onClick={() => navigate("/wall")}
+          onClick={handleLeave}
+          disabled={busy}
         >
           <HiArrowLeft />
           Back to wall
@@ -394,12 +621,44 @@ function CreateSnap() {
             <LockerPicker value={unlockAt} onChange={setUnlockAt} />
           )}
 
+          {/* ---------- Payment (NEW) ---------- */}
+          <section
+            className={`createsnap__pay ${paymentId ? "is-paid" : ""}`}
+            aria-live="polite"
+          >
+            <span className="createsnap__pay-icon">
+              {paymentId ? <HiCheckCircle /> : <HiCreditCard />}
+            </span>
+
+            <div className="createsnap__pay-text">
+              {paymentId ? (
+                <>
+                  <strong>Payment received</strong>
+                  <span>
+                    This space is yours. Finish posting below — you won't be
+                    charged again.
+                  </span>
+                </>
+              ) : (
+                <>
+                  <strong>
+                    {price ? `₹${price} to claim this space` : "Claim this space"}
+                  </strong>
+                  <span>
+                    You'll pay securely with Razorpay when you press the button.
+                  </span>
+                </>
+              )}
+            </div>
+          </section>
+
           {/* ---------- Actions ---------- */}
           <div className="createsnap__actions">
             <button
               type="button"
               className="createsnap__btn createsnap__btn--ghost"
-              onClick={() => navigate("/wall")}
+              onClick={handleLeave}
+              disabled={busy}
             >
               Cancel
             </button>
@@ -407,14 +666,14 @@ function CreateSnap() {
             <button
               type="submit"
               className="createsnap__btn createsnap__btn--primary"
-              disabled={uploading}
+              disabled={busy}
             >
-              {uploading && <span className="createsnap__spinner" />}
-              {uploading
-                ? "Uploading..."
-                : snapType === "capsule"
-                ? "Lock Snap"
-                : "Post Snap"}
+              {busy && <span className="createsnap__spinner" />}
+              {busy
+                ? STAGE_LABELS[stage]
+                : `${!paymentId && price ? `Pay ₹${price} & ` : ""}${
+                    snapType === "capsule" ? "Lock Snap" : "Post Snap"
+                  }`}
             </button>
           </div>
         </form>

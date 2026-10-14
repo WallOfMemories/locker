@@ -231,8 +231,13 @@ function SpaceDetails({ space, price, onClose }) {
 
             <h2 className="snapmodal__title">Hidden for now.</h2>
 
+            {/* CHANGED: says who hid it — the moderators, or the owner */}
             <p className="snapmodal__description">
-              This Snap has been hidden by the SnapWall moderators.
+              {space.hiddenBy === "owner"
+                ? isOwner
+                  ? "You've hidden this Snap. Your space is still yours — unhide it from your profile to show it again."
+                  : "The owner has hidden this Snap."
+                : "This Snap has been hidden by the SnapWall moderators."}
             </p>
           </div>
         ) : isLocked ? (

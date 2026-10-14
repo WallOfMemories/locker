@@ -226,8 +226,11 @@ function AdminReports() {
     );
   }
 
+  // CHANGED: the wrapper was <main className="container page adm">. The admin
+  // layout already provides the <main> and the page width, so it is a plain
+  // <div> now (a <main> inside a <main> is invalid HTML).
   return (
-    <main className="container page adm">
+    <div className="adm">
       <h1 className="adm__title">Reports</h1>
 
       <p className="adm__sub">
@@ -267,7 +270,7 @@ function AdminReports() {
           {items.map(tab === "history" ? renderHistory : renderCard)}
         </ul>
       )}
-    </main>
+    </div>
   );
 }
 

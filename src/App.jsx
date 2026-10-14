@@ -22,7 +22,11 @@ import Settings from "./pages/user/Settings";
 import CreateSnap from "./pages/user/CreateSnap";
 
 // Admin pages
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminReports from "./pages/admin/AdminReports";
+import AdminPayments from "./pages/admin/AdminPayments";
+import AdminWall from "./pages/admin/AdminWall";
 
 // Onboarding
 import SetupProfile from "./pages/onboarding/SetupProfile";
@@ -72,10 +76,16 @@ function App() {
             </Route>
           </Route>
 
-          {/* ADMIN (logged in + role "admin") */}
+          {/* ADMIN (logged in + role "admin") — its own layout + sidebar */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminRoute />}>
-              <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="reports" element={<AdminReports />} />
+                <Route path="payments" element={<AdminPayments />} />
+                <Route path="wall" element={<AdminWall />} />
+              </Route>
             </Route>
           </Route>
 

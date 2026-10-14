@@ -447,3 +447,53 @@
     bottom: 28px;
   }
 }
+/* ---------------- NEW: owner controls (Hide / Unhide / Delete) ---------------- */
+.sv__manage {
+  display: flex;
+  gap: 8px;
+}
+
+.sv__manage .sv__btn {
+  flex: 1;
+}
+
+.sv__btn--danger {
+  color: #b3261e;
+}
+
+.sv__btn--danger:hover:not(:disabled) {
+  border-color: rgba(179, 38, 30, 0.35);
+  background: #fdf0ef;
+}
+
+/* the "Yes, delete" button is filled red so it can't be hit by accident */
+.sv__btn--danger.is-on {
+  border-color: #b3261e;
+  background: #b3261e;
+  color: #fff;
+}
+
+.sv__btn--danger.is-on:hover:not(:disabled) {
+  background: #8f1e18;
+}
+
+.sv__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sv__confirm {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(179, 38, 30, 0.25);
+  border-radius: 12px;
+  background: #fdf0ef;
+}
+
+.sv__confirm p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b1a15;
+}

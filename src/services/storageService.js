@@ -14,7 +14,10 @@ const ALLOWED_TYPES = [
   "image/webp",
 ];
 
-function validateImage(file) {
+// CHANGED: exported, so the Create Snap page can check the photo BEFORE the
+// person pays (the photo is uploaded after payment — a photo that is too big
+// must be caught first, not after the money has moved).
+export function validateImage(file) {
   if (!file) {
     throw new Error("Please select an image.");
   }
