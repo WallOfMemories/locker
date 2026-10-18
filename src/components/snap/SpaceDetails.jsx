@@ -24,6 +24,36 @@ import {
 
 import "./SpaceDetails.css";
 
+// FIXED (share): the Share button used to copy window.location.href, which on
+// the wall is just the home page — so the person you sent it to never saw the
+// Snap. A Snap's real link is /?snap=<id>; SnapWall reads that and opens it.
+function buildSnapLink(snapId) {
+  return `${window.location.origin}/?snap=${encodeURIComponent(snapId)}`;
+}
+
+// navigator.clipboard only exists on https / localhost and can be refused,
+// so fall back to the old textarea trick instead of crashing.
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const area = document.createElement("textarea");
+
+  area.value = text;
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+
+  const ok = document.execCommand("copy");
+
+  document.body.removeChild(area);
+
+  if (!ok) throw new Error("Copy failed");
+}
+
 // NEW: the picture at the top of the "available" and "sealed" popups — a
 // tiny piece of the wall fading out at the edges, with this space shown as
 // the highlighted tile (a "+" when it's free, a lock when it's sealed).
@@ -60,6 +90,9 @@ function SpaceDetails({ space, price, onClose }) {
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [reportOpen, setReportOpen] = useState(false);
+
+  // "idle" | "copied" | "failed" — shown on the Share button for 2 seconds
+  const [shareState, setShareState] = useState("idle");
 
   useEffect(() => {
     if (!space) return;
@@ -123,6 +156,35 @@ function SpaceDetails({ space, price, onClose }) {
     } finally {
       setLikeLoading(false);
     }
+  }
+
+  // Phones: open the native share sheet. Everyone else: copy the link.
+  async function handleShare() {
+    const link = buildSnapLink(space.snapId);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "SnapWall",
+          text: space.caption || "Check out this Snap",
+          url: link,
+        });
+
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return; // person closed the sheet
+        // any other failure: fall through and copy the link instead
+      }
+    }
+
+    try {
+      await copyText(link);
+      setShareState("copied");
+    } catch {
+      setShareState("failed");
+    }
+
+    setTimeout(() => setShareState("idle"), 2000);
   }
 
   async function handleSave() {
@@ -330,13 +392,14 @@ function SpaceDetails({ space, price, onClose }) {
               <button
                 type="button"
                 className="snapmodal__action snapmodal__action--share"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert("Snap link copied!");
-                }}
+                onClick={handleShare}
               >
                 <FaShareAlt />
-                Share
+                {shareState === "copied"
+                  ? "Link copied!"
+                  : shareState === "failed"
+                    ? "Couldn't copy"
+                    : "Share"}
               </button>
             </div>
           </>

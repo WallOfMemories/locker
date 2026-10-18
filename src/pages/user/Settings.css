@@ -1,0 +1,258 @@
+/* Settings page — namespaced "settings". Same ink / rust palette as the rest
+   of the user area. */
+.settings {
+  --ink: #241f1a;
+  --ink-soft: #867c70;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #3f7a4a;
+  --danger: #b3261e;
+  --line: rgba(36, 31, 26, 0.1);
+  max-width: 760px;
+}
+
+.settings__header { margin-bottom: 22px; }
+.settings__header h1 { margin: 0 0 4px; font-size: 1.8rem; color: var(--ink); }
+.settings__header p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
+/* ---------- accordion ---------- */
+.settings__sections { display: grid; gap: 12px; }
+
+.settings__section {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.settings__section:hover { box-shadow: 0 6px 16px rgba(36, 31, 26, 0.06); }
+.settings__section.is-open { border-color: rgba(180, 80, 42, 0.35); }
+.settings__section--danger.is-open { border-color: rgba(179, 38, 30, 0.4); }
+
+.settings__head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.settings__icon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(180, 80, 42, 0.1);
+  color: var(--rust);
+}
+
+.settings__icon svg { width: 20px; height: 20px; }
+
+.settings__section--danger .settings__icon {
+  background: rgba(179, 38, 30, 0.1);
+  color: var(--danger);
+}
+
+.settings__titles { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.settings__titles strong { font-size: 15.5px; color: var(--ink); }
+.settings__titles span { font-size: 13px; line-height: 1.4; color: var(--ink-soft); }
+
+.settings__section--danger .settings__titles strong { color: var(--danger); }
+
+.settings__chevron {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--ink-soft);
+  transition: transform 0.2s ease;
+}
+
+.is-open > .settings__head .settings__chevron { transform: rotate(180deg); }
+
+.settings__panel {
+  padding: 4px 18px 20px;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- building blocks used inside the panels ---------- */
+.settings__stack { display: grid; gap: 22px; padding-top: 16px; }
+
+.settings__block { display: grid; gap: 10px; }
+.settings__block h3 { margin: 0; font-size: 15px; color: var(--ink); }
+
+.settings__hint { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); }
+
+.settings__link, .settings__linkbtn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--rust);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* label / value rows */
+.settings__rows { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 12px; }
+
+.settings__rows li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 14px;
+  font-size: 13.5px;
+}
+
+.settings__rows li + li { border-top: 1px solid var(--line); }
+.settings__rows span { flex: none; color: var(--ink-soft); }
+.settings__rows strong { min-width: 0; font-weight: 600; color: var(--ink); text-align: right; overflow-wrap: anywhere; }
+
+/* bullet list */
+.settings__list { margin: 0; padding-left: 20px; display: grid; gap: 7px; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+
+/* forms */
+.settings__form { display: grid; gap: 12px; max-width: 420px; }
+.settings__field { display: grid; gap: 5px; font-size: 13px; font-weight: 600; color: var(--ink); }
+.settings__field small { font-weight: 400; color: var(--ink-soft); justify-self: end; }
+
+.settings__field input,
+.settings__field select,
+.settings__field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.settings__field textarea { resize: vertical; }
+
+.settings__field input:focus,
+.settings__field select:focus,
+.settings__field textarea:focus { outline: 2px solid rgba(180, 80, 42, 0.4); border-color: var(--rust); }
+
+.settings__check { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+.settings__check input { margin-top: 3px; accent-color: var(--danger); }
+
+/* messages */
+.settings__msg { margin: 0; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; line-height: 1.45; }
+.settings__msg--error { background: rgba(179, 38, 30, 0.08); color: var(--danger); }
+.settings__msg--ok { background: rgba(63, 122, 74, 0.1); color: var(--sage); }
+
+/* buttons */
+.settings__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.settings__btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid var(--rust);
+  border-radius: 999px;
+  background: var(--rust);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.settings__btn:hover:not(:disabled) { background: var(--rust-deep); }
+.settings__btn:disabled { opacity: 0.5; cursor: default; }
+
+.settings__btn--ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+.settings__btn--ghost:hover:not(:disabled) { background: #fff; border-color: var(--rust); color: var(--rust); }
+
+.settings__btn--danger { background: var(--danger); border-color: var(--danger); }
+.settings__btn--danger:hover:not(:disabled) { background: #8f1d17; }
+
+/* privacy switches */
+.settings__switches { margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 12px; }
+
+.settings__switch { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px; }
+.settings__switch + .settings__switch { border-top: 1px solid var(--line); }
+.settings__switch strong { font-size: 14px; color: var(--ink); }
+.settings__switch p { margin: 3px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+
+.settings__toggle {
+  flex: none;
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: #cfc8bf;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.settings__toggle span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
+}
+
+.settings__toggle.is-on { background: var(--rust); }
+.settings__toggle.is-on span { transform: translateX(18px); }
+.settings__toggle:disabled { opacity: 0.6; cursor: default; }
+.settings__toggle:focus-visible { outline: 2px solid var(--rust); outline-offset: 2px; }
+
+/* terms */
+.settings__terms { display: grid; gap: 16px; }
+.settings__terms h3 { margin: 0 0 4px; font-size: 14.5px; color: var(--ink); }
+.settings__terms p { margin: 0 0 6px; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+
+/* FAQs */
+.settings__faqs { border: 1px solid var(--line); border-radius: 12px; }
+.settings__faqs details + details { border-top: 1px solid var(--line); }
+.settings__faqs summary { padding: 13px 14px; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.settings__faqs details[open] summary { color: var(--rust); }
+.settings__faqs p { margin: 0; padding: 0 14px 14px; font-size: 13.5px; line-height: 1.6; color: var(--ink-soft); }
+
+/* delete account */
+.settings__timeline { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+
+.settings__timeline li {
+  padding: 12px 14px;
+  border-left: 3px solid var(--rust);
+  border-radius: 0 10px 10px 0;
+  background: rgba(180, 80, 42, 0.05);
+}
+
+.settings__timeline strong { font-size: 13.5px; color: var(--ink); }
+.settings__timeline p { margin: 3px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); }
+
+.settings__danger { padding: 16px; border: 1px solid rgba(179, 38, 30, 0.3); border-radius: 14px; background: rgba(179, 38, 30, 0.03); }
+.settings__danger h3 { color: var(--danger); }
+
+.settings__notice { display: grid; gap: 10px; padding: 16px; border-radius: 14px; }
+.settings__notice h3 { margin: 0; font-size: 15px; }
+.settings__notice p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+.settings__notice--danger { border: 1px solid rgba(179, 38, 30, 0.3); background: rgba(179, 38, 30, 0.05); }
+.settings__notice--danger h3 { color: var(--danger); }
+
+@media (max-width: 560px) {
+  .settings__rows li { flex-direction: column; gap: 2px; }
+  .settings__rows strong { text-align: left; }
+}

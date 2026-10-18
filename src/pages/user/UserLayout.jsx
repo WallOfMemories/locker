@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useNotifications } from "../../context/NotificationContext";
 import {
   FiUser,
   FiCreditCard,
@@ -29,6 +30,8 @@ function getInitials(name) {
 function UserLayout() {
   const { logout, currentUser, profile } = useAuth();
   const navigate = useNavigate();
+  // NEW: number of unread notifications (for the sidebar badge)
+  const { unreadCount } = useNotifications();
 
   async function handleLogout() {
     await logout();
@@ -56,6 +59,12 @@ function UserLayout() {
               <NavLink key={to} to={to} end={end} title={label}>
                 <Icon />
                 <span>{label}</span>
+                {/* NEW: unread badge, only on the Notifications item */}
+                {to === "/profile/notifications" && unreadCount > 0 && (
+                  <b className="user-sidebar__badge">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </b>
+                )}
               </NavLink>
             ))}
           </nav>

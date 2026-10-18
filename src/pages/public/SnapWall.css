@@ -1,10 +1,24 @@
+/* ============================================================
+   The wall page — NEW LAYOUT
+   The wall fills everything under the navbar. Boxes are laid out by
+   SnapWallGrid so they cover the whole area (no empty margins, nothing
+   cut off). If there are too many boxes for them to stay a usable size,
+   the wall scrolls down instead.
+   ============================================================ */
 .snapwall-page {
+  /* CHANGED: white, like the rest of the site (the gray was #e4e7ea).
+     Change this one value to restyle the wall's background. */
+  --wall-bg: #ffffff;
+
   position: fixed;
-  inset: 72px 0 0 0;
+  /* just under the navbar (65px bar, 57px on phones) */
+  inset: 65px 0 0 0;
   overflow: hidden;
-  background: var(--background);
+  background: var(--wall-bg);
 }
 
+/* The area the wall is shown in. Drag to move, wheel / pinch to zoom
+   (see SnapWallGrid.jsx) — so the browser must not scroll or zoom it. */
 .wall-viewport {
   position: absolute;
   inset: 0;
@@ -14,12 +28,6 @@
   user-select: none;
   -webkit-user-select: none;
   overscroll-behavior: none;
-  background-image: radial-gradient(
-    circle,
-    #d4d4cc 1.5px,
-    transparent 1.6px
-  );
-  background-size: 60px 60px;
 }
 
 .wall-viewport.is-dragging,
@@ -27,6 +35,7 @@
   cursor: grabbing !important;
 }
 
+/* The wall itself; SnapWallGrid moves and scales this. */
 .wall-world {
   position: absolute;
   top: 0;
@@ -34,75 +43,11 @@
   transform-origin: 0 0;
 }
 
-.snap-space {
-  position: absolute;
-  overflow: hidden;
-  padding: 0;
-  border: 0;
-  border-radius: 16px;
-  background: var(--surface-soft);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  cursor: pointer;
-}
-
-.snap-space--available {
-  border: 2px dashed #cfcfc8;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.snap-space--available:hover {
-  background: #e9e9e3;
-  border-color: #999;
-}
-
-.snap-space__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-}
-
-.snap-space__overlay {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 60px 16px 14px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-  color: white;
-  text-align: left;
-  font-size: 18px;
-  font-weight: 600;
-  pointer-events: none;
-}
-
-.snap-space__available {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 8px;
-  color: var(--text-secondary);
-}
-
-.snap-space__available span {
-  font-size: 64px;
-  font-weight: 300;
-  line-height: 1;
-}
-
-.snap-space__available small {
-  font-size: 18px;
-}
-
+/* + / − / reset / find-my-Snaps */
 .wall-controls {
   position: absolute;
-  right: 20px;
-  bottom: 24px;
+  right: 16px;
+  bottom: 18px;
   z-index: 5;
   display: flex;
   flex-direction: column;
@@ -110,26 +55,63 @@
 }
 
 .wall-controls button {
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--border);
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(36, 31, 26, 0.1);
   border-radius: 12px;
-  background: white;
-  color: var(--text-primary);
-  font-size: 22px;
-  line-height: 1;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+  background: #fff;
+  color: #241f1a;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.wall-controls button svg {
+  width: 19px;
+  height: 19px;
 }
 
 .wall-controls button:hover {
-  background: var(--surface-soft);
+  background: #f4f1ec;
 }
 
 .wall-controls button:active {
   transform: scale(0.95);
+}
+
+/* the "find my Snaps" button wears the same rust as the highlight */
+.wall-controls .wall-controls__mine {
+  border-color: #b4502a;
+  background: #b4502a;
+  color: #fff;
+}
+
+.wall-controls .wall-controls__mine:hover {
+  background: #8f3d1f;
+}
+
+/* CHANGED: a real grid (was rows of flexible boxes). The column / row counts
+   are set by SnapWallGrid, so every row lines up. */
+.wall-grid {
+  display: grid;
+  /* CHANGED: tighter spacing (was 10px / 12px) */
+  gap: 5px; /* keep in sync with WALL_GAP in utils/wallLayout.js */
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px; /* keep in sync with WALL_PAD */
+}
+
+/* every box visible at once: the grid is exactly as tall as the screen */
+.wall-grid--fit {
+  height: 100%;
+}
+
+@media (max-width: 720px) {
+  .snapwall-page {
+    inset: 57px 0 0 0;
+  }
 }
 
 .snapwall-status {

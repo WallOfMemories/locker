@@ -1,8 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600&family=Inter:wght@400;500;600&display=swap');
 
 /* ============================================================
-   Tokens — same paper/ink/rust/sage palette as the rest of
-   SnapWall, scoped locally so this tile works in any grid.
+   One box on the wall — NEW DESIGN
+   A white card with a soft shadow. Available boxes hold a dashed rust
+   frame with a thin "+" and AVAILABLE; occupied boxes hold the photo like
+   a print; sealed capsules hold a dark panel.
+
+   .snap-space is the box (and the size "container"); everything visual is
+   drawn on .snap-space__card inside it and sized in container units (cqmin),
+   so the design scales with the box. Where it sits in the grid (width,
+   height) is decided by .wall-grid in SnapWall.css.
    ============================================================ */
 .snap-space {
   --paper: #f7f1e3;
@@ -10,53 +17,181 @@
   --ink-soft: #6b6055;
   --rust: #b4502a;
   --rust-deep: #8f3d1f;
-  --sage: #6b7f5e;
 
   --font-display: "Newsreader", Georgia, serif;
   --font-body: "Inter", system-ui, sans-serif;
 
+  container: snap / size;
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  display: block;
+  min-width: 0;
+  min-height: 0;
   padding: 0;
-  border: none;
-  border-radius: 10px;
-  overflow: hidden;
+  border: 0;
+  background: none;
   cursor: pointer;
   font-family: var(--font-body);
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .snap-space:focus-visible {
   outline: 2px solid var(--rust);
   outline-offset: 2px;
+  border-radius: 14px;
 }
 
 /* ------------------------------------------------------------
-   Occupied — a filled instant print
+   The white card (shared by every kind of box)
    ------------------------------------------------------------ */
-.snap-space--occupied {
-  background: var(--ink);
-  box-shadow: 0 6px 16px rgba(36, 31, 26, 0.18);
+.snap-space__card {
+  /* fallbacks for browsers without container units */
+  --r: 14px;
+  --pad: 5px;
+  --r: clamp(9px, 13cqmin, 18px);
+  --pad: clamp(3px, 5.5cqmin, 7px);
+
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--r);
+  background: #ffffff;
+  /* a slightly clearer edge, so white boxes still stand out on the white page */
+  box-shadow:
+    0 0 0 1px rgba(36, 31, 26, 0.09),
+    0 1px 4px rgba(36, 31, 26, 0.12);
+  transition:
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.2s ease;
 }
 
-.snap-space--occupied:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(36, 31, 26, 0.28);
+.snap-space:hover .snap-space__card,
+.snap-space:focus-visible .snap-space__card {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(36, 31, 26, 0.06),
+    0 10px 22px rgba(36, 31, 26, 0.14);
 }
 
+/* ------------------------------------------------------------
+   Available — a quiet placeholder
+   CHANGED: no solid white card or shadow (about 160 of them side by side was
+   too busy and fought with the photos). Just a light dashed frame and the
+   circle-plus; the AVAILABLE label appears on hover. Photos and your own
+   Snaps are now the strongest things on the wall.
+   ------------------------------------------------------------ */
+.snap-space--available .snap-space__card {
+  background: transparent;
+  box-shadow: none;
+}
+
+.snap-space--available .snap-space__card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border: 1px dashed rgba(180, 80, 42, 0.38);
+  border-radius: var(--r);
+  pointer-events: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* hover / keyboard focus: the frame firms up and the box lights softly */
+.snap-space--available:hover .snap-space__card,
+.snap-space--available:focus-visible .snap-space__card {
+  transform: none;
+  box-shadow: none;
+  background: rgba(180, 80, 42, 0.05);
+}
+
+.snap-space--available:hover .snap-space__card::before,
+.snap-space--available:focus-visible .snap-space__card::before {
+  border-color: rgba(180, 80, 42, 0.85);
+  background: transparent;
+}
+
+.snap-space__available {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rust-deep);
+}
+
+/* The circle-plus icon (react-icons). It is an SVG, so the line weight is
+   the same for every box and stays crisp when zoomed. */
+.snap-space__plus {
+  display: block;
+  width: 14px;
+  height: 14px;
+  width: clamp(11px, 20cqmin, 26px);
+  height: clamp(11px, 20cqmin, 26px);
+  color: var(--rust);
+  opacity: 0.7; /* softer at rest, full strength on hover */
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s ease;
+}
+
+.snap-space--available:hover .snap-space__plus,
+.snap-space--available:focus-visible .snap-space__plus {
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+/* CHANGED: AVAILABLE only shows on hover (it sat on every box before). It
+   floats at the bottom of the box, so the "+" never moves. */
+.snap-space__available small {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  bottom: clamp(5px, 12cqmin, 13px);
+  text-align: center;
+  font-size: 9px;
+  font-size: clamp(6.5px, 9.5cqmin, 11px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rust-deep);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.snap-space--available:hover .snap-space__available small,
+.snap-space--available:focus-visible .snap-space__available small {
+  opacity: 1;
+  transform: none;
+}
+
+/* very small boxes: just the "+".
+   CHANGED: 62px -> 50px. Boxes on a fitted wall are never narrower than ~52px,
+   and at 62px rows whose boxes were a few px apart (20 vs 21 per row) showed
+   the label on some rows and not on others. */
+@container snap (max-width: 50px) {
+  .snap-space__available small {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Occupied — the photo sits inside the white card
+   ------------------------------------------------------------ */
+/* CHANGED: the photo fills the whole box edge to edge — no white frame. The
+   card's rounded corners and overflow:hidden give it its shape. */
 .snap-space__image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(1.03) contrast(1.02);
-  transition: transform 0.35s ease, filter 0.25s ease;
+  background: #ece8e1;
+  transition: transform 0.35s ease;
 }
 
 .snap-space--occupied:hover .snap-space__image {
-  transform: scale(1.06);
+  transform: scale(1.04);
 }
 
 .snap-space__overlay {
@@ -64,14 +199,15 @@
   inset: 0;
   display: flex;
   align-items: flex-end;
-  padding: 10px 12px;
+  padding: clamp(4px, 8cqmin, 10px);
   background: linear-gradient(
     to top,
-    rgba(23, 19, 16, 0.82) 0%,
-    rgba(23, 19, 16, 0.35) 45%,
+    rgba(23, 19, 16, 0.78) 0%,
+    rgba(23, 19, 16, 0.3) 45%,
     transparent 75%
   );
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
@@ -81,140 +217,139 @@
 }
 
 .snap-space__overlay span {
-  font-size: 12.5px;
+  overflow: hidden;
+  max-width: 100%;
+  font-size: 10px;
+  font-size: clamp(8px, 11cqmin, 13px);
   font-weight: 600;
   color: var(--paper);
-  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 /* ------------------------------------------------------------
-   Available — an empty slot on the wall, waiting to be filled
+   Locked / hidden — a dark panel inside the card
    ------------------------------------------------------------ */
-.snap-space--available {
-  background: rgba(180, 80, 42, 0.04);
-  border: 1.5px dashed rgba(180, 80, 42, 0.28);
-}
-
-.snap-space--available:hover {
-  background: rgba(180, 80, 42, 0.08);
-  border-color: var(--rust);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(180, 80, 42, 0.14);
-}
-
-.snap-space__available {
-  width: 100%;
-  height: 100%;
+.snap-space__locked {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  color: var(--rust-deep);
-}
-
-.snap-space__available span {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 500;
-  line-height: 1;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.snap-space--available:hover .snap-space__available span {
-  transform: scale(1.15) rotate(90deg);
-}
-
-.snap-space__available small {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--ink-soft);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-/* ------------------------------------------------------------
-   Small tiles (dense grids) — trims the "+" and label to fit
-   ------------------------------------------------------------ */
-@media (max-width: 640px) {
-  .snap-space {
-    border-radius: 7px;
-  }
-
-  .snap-space__available span {
-    font-size: 1.4rem;
-  }
-
-  .snap-space__available small {
-    font-size: 9.5px;
-  }
-
-  .snap-space__overlay {
-    padding: 7px 8px;
-  }
-
-  .snap-space__overlay span {
-    font-size: 11px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .snap-space,
-  .snap-space__image,
-  .snap-space__available span {
-    transition: none;
-  }
-}
-
-/* ------------------------------------------------------------
-   Locked — a sealed Time Capsule (photo hidden until it opens)
-   ------------------------------------------------------------ */
-.snap-space--locked,
-.snap-space--locked:hover {
+  gap: clamp(2px, 4cqmin, 6px);
+  padding: 4px;
+  text-align: center;
+  color: var(--paper);
   background:
     repeating-linear-gradient(
       45deg,
-      rgba(247, 241, 227, 0.05) 0 10px,
-      transparent 10px 20px
+      rgba(247, 241, 227, 0.05) 0 8px,
+      transparent 8px 16px
     ),
     linear-gradient(160deg, #3a2f27 0%, #241f1a 100%);
 }
 
-.snap-space__locked {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px;
-  text-align: center;
-  color: var(--paper);
-}
-
 .snap-space__lock {
-  width: 46px;
-  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 4px;
+  width: 28px;
+  height: 28px;
+  width: clamp(22px, 30cqmin, 42px);
+  height: clamp(22px, 30cqmin, 42px);
   border-radius: 50%;
   background: var(--rust);
   color: var(--paper);
-  font-size: 22px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  font-size: 14px;
+  font-size: clamp(11px, 16cqmin, 21px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 .snap-space__locked strong {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 11px;
+  font-size: clamp(9px, 11cqmin, 15px);
   font-weight: 500;
+  line-height: 1.1;
 }
 
 .snap-space__locked small {
-  font-size: 12px;
+  font-size: 10px;
+  font-size: clamp(8px, 9cqmin, 12px);
   color: rgba(247, 241, 227, 0.72);
+}
+
+/* not enough room for the second line / the words */
+@container snap (max-width: 104px) {
+  .snap-space__locked small {
+    display: none;
+  }
+}
+
+@container snap (max-width: 66px) {
+  .snap-space__locked strong {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   Mine — the account holder's own boxes, easy to find on a big wall
+   A rust ring with a soft glow that gently pulses, plus a YOU badge.
+   ------------------------------------------------------------ */
+.snap-space--mine {
+  z-index: 2; /* the ring is never covered by a neighbour */
+}
+
+.snap-space--mine .snap-space__card,
+.snap-space--mine:hover .snap-space__card {
+  box-shadow:
+    0 0 0 2px var(--rust),
+    0 0 0 5px rgba(180, 80, 42, 0.28),
+    0 8px 20px rgba(180, 80, 42, 0.38);
+  animation: snap-mine-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes snap-mine-pulse {
+  50% {
+    box-shadow:
+      0 0 0 2px var(--rust),
+      0 0 0 8px rgba(180, 80, 42, 0.1),
+      0 8px 26px rgba(180, 80, 42, 0.5);
+  }
+}
+
+.snap-space__badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  top: clamp(3px, 6cqmin, 8px);
+  left: clamp(3px, 6cqmin, 8px);
+  z-index: 2;
+  padding: 1px 4px;
+  padding: 1px clamp(3px, 7cqmin, 7px);
+  border-radius: 999px;
+  background: var(--rust);
+  font-size: 7px;
+  font-size: clamp(6px, 9cqmin, 11px);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snap-space__card,
+  .snap-space__image,
+  .snap-space__plus {
+    transition: none;
+  }
+
+  .snap-space--mine .snap-space__card {
+    animation: none;
+  }
 }

@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/navbar/Navbar";
 import { AuthProvider } from "./context/AuthContext";
+// NEW: shared unread-notifications count (sidebar badge)
+import { NotificationProvider } from "./context/NotificationContext";
 
 // Main pages
 import SnapWall from "./pages/public/SnapWall";
@@ -40,6 +42,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+       <NotificationProvider>
         <Navbar />
 
         <Routes>
@@ -91,6 +94,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+       </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   );

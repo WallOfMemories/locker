@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import SnapWallCanvas from "../../components/snap/SnapWallCanvas";
+// CHANGED: the zoom-and-drag canvas is replaced by a grid that fits the screen
+import SnapWallGrid from "../../components/snap/SnapWallGrid";
 import SpaceDetails from "../../components/snap/SpaceDetails";
+
+// NEW: who is using the site, so their own Snaps can be highlighted
+import { useAuth } from "../../context/AuthContext";
 
 import { getSpaces } from "../../services/spaceApi";
 import { getSnapWallSettings } from "../../services/settingsApi";
@@ -10,6 +14,8 @@ import { getSnapWallSettings } from "../../services/settingsApi";
 import "./SnapWall.css";
 
 function SnapWall() {
+  const { currentUser } = useAuth();
+
   const [spaces, setSpaces] = useState([]);
   const [spacePrice, setSpacePrice] = useState(0);
   const [selectedSpace, setSelectedSpace] = useState(null);
@@ -30,6 +36,35 @@ function SnapWall() {
 
     return () => {
       document.body.style.overflow = previous;
+    };
+  }, []);
+
+  // NEW: while the page is open, quietly re-check the wall so spaces an admin
+  // adds and Snaps other people post show up without a refresh. It never
+  // shows the loading screen and never touches an error that is on screen.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refreshQuietly() {
+      if (document.visibilityState !== "visible") return;
+
+      try {
+        const spacesData = await getSpaces();
+
+        if (!cancelled) setSpaces(spacesData);
+      } catch {
+        // keep showing what we have; the next check will try again
+      }
+    }
+
+    const timer = setInterval(refreshQuietly, 30 * 1000);
+
+    document.addEventListener("visibilitychange", refreshQuietly);
+
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", refreshQuietly);
     };
   }, []);
 
@@ -102,9 +137,10 @@ function SnapWall() {
       )}
 
       {!loading && !error && (
-        <SnapWallCanvas
+        <SnapWallGrid
           spaces={spaces}
           onSelect={setSelectedSpace}
+          myId={currentUser?.uid}
         />
       )}
 

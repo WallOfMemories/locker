@@ -1,0 +1,287 @@
+/* Notifications page — namespaced "notif". Lives inside the user area, so it
+   uses the same ink / rust palette as Payment History. */
+.notif {
+  --ink: #241f1a;
+  --ink-soft: #867c70;
+  --rust: #b4502a;
+  --rust-deep: #8f3d1f;
+  --sage: #55684a;
+  --rose: #c2415a;
+  --amber: #b7791f;
+  --line: rgba(36, 31, 26, 0.1);
+  max-width: 760px;
+}
+
+/* ---------- header ---------- */
+.notif__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.notif__header h1 {
+  margin: 0 0 4px;
+  font-size: 1.8rem;
+  color: var(--ink);
+}
+
+.notif__header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.notif__tools {
+  display: flex;
+  gap: 8px;
+}
+
+.notif__tool {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.notif__tool:hover:not(:disabled) {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+
+.notif__tool:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.notif__tool--danger:hover:not(:disabled) {
+  border-color: #b3261e;
+  color: #b3261e;
+}
+
+/* ---------- states ---------- */
+.notif__note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.notif__note--error {
+  color: #b3261e;
+}
+
+.notif__retry {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--rust);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notif__empty {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 56px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.notif__empty > svg {
+  width: 34px;
+  height: 34px;
+  color: var(--rust);
+}
+
+.notif__empty h2 {
+  margin: 6px 0 0;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.notif__empty p {
+  max-width: 340px;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ---------- list ---------- */
+.notif__list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notif__item {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.notif__item:hover {
+  box-shadow: 0 6px 16px rgba(36, 31, 26, 0.06);
+}
+
+/* unread = soft rust tint + rust edge */
+.notif__item--unread {
+  border-color: rgba(180, 80, 42, 0.3);
+  background: rgba(180, 80, 42, 0.05);
+}
+
+.notif__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 8px 14px 16px;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* ---------- avatar / icon ---------- */
+.notif__avatar {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+
+.notif__avatar > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.notif__icon,
+.notif__chip {
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.notif__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.notif__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.notif__chip {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.notif__chip svg {
+  width: 11px;
+  height: 11px;
+}
+
+.notif__icon--rust { background: var(--rust); }
+.notif__icon--rose { background: var(--rose); }
+.notif__icon--sage { background: var(--sage); }
+.notif__icon--amber { background: var(--amber); }
+.notif__icon--grey { background: var(--ink-soft); }
+
+/* ---------- text ---------- */
+.notif__body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.notif__message {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.notif__item:not(.notif__item--unread) .notif__message {
+  font-weight: 500;
+}
+
+.notif__caption {
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notif__time {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.notif__dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rust);
+}
+
+/* ---------- delete ---------- */
+.notif__delete {
+  flex: none;
+  width: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 0 16px 16px 0;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.notif__delete:hover {
+  background: rgba(179, 38, 30, 0.07);
+  color: #b3261e;
+}
+
+.notif__main:focus-visible,
+.notif__delete:focus-visible,
+.notif__tool:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: -2px;
+}
+
+@media (max-width: 560px) {
+  .notif__tools {
+    width: 100%;
+  }
+}
