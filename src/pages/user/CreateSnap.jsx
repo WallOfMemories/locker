@@ -32,6 +32,7 @@ import LockerPicker, {
 import { toLocalInputValue } from "../../utils/countdown";
 
 import "./CreateSnap.css";
+import { API_BASE_URL } from "../../config";
 
 const SNAP_TYPES = [
   {
@@ -52,10 +53,6 @@ const SNAP_TYPES = [
 // same limit in backend snapController.js.
 const MAX_CAPTION = 100;
 
-// CHANGED: was a hard-coded "http://localhost:5000" below, which ignored
-// VITE_API_BASE_URL (so posting would break as soon as the app is deployed).
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 // What the button says while each step is running.
 const STAGE_LABELS = {

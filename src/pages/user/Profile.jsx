@@ -296,9 +296,9 @@ function Profile() {
         new Date(b.unlockAt || 0).getTime()
     );
 
-  let items = [];
+  let items;
   let tabLoading = false;
-  let tabError = "";
+  let tabError;
 
   if (tab === "snaps") {
     items = posts;

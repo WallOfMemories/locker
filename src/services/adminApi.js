@@ -1,8 +1,6 @@
 import { auth } from "./firebase";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:5000";
 
 // Every admin request carries the logged-in user's Firebase token; the
 // backend re-checks that the account really is an admin.

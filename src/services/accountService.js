@@ -1,8 +1,6 @@
 import { auth } from "./firebase";
+import { API_URL } from "../config";
 
-const API_URL = `${
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-}/api`;
 
 // `freshToken` forces a brand-new ID token. Needed right after the person
 // re-entered their password: the server checks when they LAST signed in, and

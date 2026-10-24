@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { sendPasswordResetEmail } from "firebase/auth";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { auth } from "../../services/firebase";
-import { resolveLoginEmail } from "../../services/authService";
+import { sendResetForIdentifier } from "../../services/authService";
 
 import img1 from "../../assets/image-1.png";
 import img2 from "../../assets/image-2.png";
@@ -105,9 +103,7 @@ function ForgotPassword() {
     setLoading(true);
 
     try {
-      const email = await resolveLoginEmail(identifier);
-
-      await sendPasswordResetEmail(auth, email);
+      await sendResetForIdentifier(identifier);
 
       setSent(true);
     } catch (error) {

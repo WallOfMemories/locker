@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-import { auth } from "../../services/firebase";
 import {
-  resolveLoginEmail,
+  signInWithIdentifier,
   signInWithGoogle,
 } from "../../services/authService";
 
@@ -39,7 +37,6 @@ const wallPhotos = [
 const TAGLINE = "Capture. Share.\nEnjoy.";
 
 function Login() {
-  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     identifier: "",
@@ -150,9 +147,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const email = await resolveLoginEmail(form.identifier);
-
-      await signInWithEmailAndPassword(auth, email, form.password);
+      await signInWithIdentifier(form.identifier, form.password);
       // Redirect is handled by PublicOnlyRoute.
     } catch (error) {
       console.error("Login error:", error);

@@ -9,11 +9,8 @@ import {
   db,
   auth,
 } from "./firebase";
+import { API_BASE_URL } from "../config";
 
-// CHANGED: every request below used a hard-coded "http://localhost:5000",
-// which ignored VITE_API_BASE_URL and would break once the app is deployed.
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export async function getPublishedSnaps() {
   const snapsQuery = query(

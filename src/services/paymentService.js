@@ -1,8 +1,6 @@
 import { auth } from "./firebase";
+import { API_URL } from "../config";
 
-const API_URL = `${
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-}/api`;
 
 async function request(path, body, method = "POST") {
   const user = auth.currentUser;
@@ -49,9 +47,6 @@ export async function getMyPayments() {
 }
 
 // TEST ONLY: creates a ₹1 order -> { order: { id, amount, currency }, keyId }
-export async function createTestOrder() {
-  return request("/payments/test-order");
-}
 
 // Sends what Razorpay Checkout returned to the server to check the
 // signature: { razorpay_order_id, razorpay_payment_id, razorpay_signature }

@@ -1,5 +1,8 @@
 import {
   GoogleAuthProvider,
+  sendPasswordResetEmail,
+  signInWithCustomToken,
+  signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
 
@@ -11,10 +14,8 @@ import {
 } from "firebase/firestore";
 
 import { auth, db } from "./firebase";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:5000";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -54,40 +55,71 @@ export async function ensureUserDoc(user) {
   return { id: user.uid, ...profile };
 }
 
-// Accepts an email or a username and returns the login email.
-export async function resolveLoginEmail(identifier) {
-  const value = identifier.trim();
-
-  if (value.includes("@")) {
-    return value;
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/api/auth/resolve-username`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: value }),
-    }
-  );
+// Username login / reset happen on the server, so the browser is never told
+// which email belongs to a username (that lookup used to be public).
+async function postAuth(path, body) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 
   const data = await response.json().catch(() => ({}));
 
-  if (response.status === 404) {
+  return { response, data };
+}
+
+// Signs in with a username + password. Emails go straight to Firebase.
+export async function signInWithIdentifier(identifier, password) {
+  const value = identifier.trim();
+
+  if (value.includes("@")) {
+    return signInWithEmailAndPassword(auth, value, password);
+  }
+
+  const { response, data } = await postAuth("username-login", {
+    username: value,
+    password,
+  });
+
+  if (response.status === 429) {
     const error = new Error(
-      "No account found with this username."
+      data.message || "Too many attempts. Please try again later."
     );
-    error.code = "app/username-not-found";
+    error.code = "auth/too-many-requests";
     throw error;
   }
 
-  if (!response.ok || !data.email) {
-    throw new Error(
-      data.message || "Unable to look up username."
-    );
+  if (!response.ok || !data.customToken) {
+    // Same error for "no such username" and "wrong password".
+    const error = new Error("Incorrect username or password.");
+    error.code = "auth/invalid-credential";
+    throw error;
   }
 
-  return data.email;
+  return signInWithCustomToken(auth, data.customToken);
+}
+
+// Sends a password reset email for an email address or a username.
+// Always looks successful, so it can't be used to find registered accounts.
+export async function sendResetForIdentifier(identifier) {
+  const value = identifier.trim();
+
+  if (value.includes("@")) {
+    try {
+      await sendPasswordResetEmail(auth, value);
+    } catch (error) {
+      if (error.code !== "auth/user-not-found") throw error;
+    }
+
+    return;
+  }
+
+  const { response } = await postAuth("forgot-password", { username: value });
+
+  if (response.status === 429) {
+    const error = new Error("Too many attempts. Please try again later.");
+    error.code = "auth/too-many-requests";
+    throw error;
+  }
 }
