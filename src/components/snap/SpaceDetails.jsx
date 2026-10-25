@@ -9,6 +9,7 @@ import {
   HiLocationMarker,
 } from "react-icons/hi";
 import { useAuth } from "../../context/AuthContext";
+import { setReturnTo } from "../../utils/returnTo";
 import { formatUnlockDate, timeUntil } from "../../utils/countdown";
 import { reportSnap } from "../../services/moderationApi";
 import ReportDialog from "./ReportDialog";
@@ -85,14 +86,24 @@ function SpaceDetails({ space, price, onClose }) {
   // Visitors who are not logged in can look around, but liking, saving,
   // reporting and creating a Snap send them to /login. After login they come
   // back to this same Snap / space on the wall.
-  function goToLogin() {
+  function goToLogin(intent = "wall") {
+    // "create": after login (and profile setup for new accounts) carry on
+    // straight to the Create Snap page for this same space.
+    // Anything else: come back to this Snap / space on the wall.
     const search = space?.snapId
       ? `?snap=${encodeURIComponent(space.snapId)}`
       : space?.id
         ? `?space=${encodeURIComponent(space.id)}`
         : "";
 
-    navigate("/login", { state: { from: { pathname: "/", search } } });
+    const target =
+      intent === "create"
+        ? { pathname: "/create-snap", search: "", state: { space } }
+        : { pathname: "/", search, state: null };
+
+    setReturnTo(target);
+
+    navigate("/login", { state: { from: target } });
   }
 
   const [liked, setLiked] = useState(false);
@@ -443,7 +454,7 @@ function SpaceDetails({ space, price, onClose }) {
               type="button"
               onClick={() => {
                 if (!currentUser) {
-                  goToLogin();
+                  goToLogin("create");
                   return;
                 }
 

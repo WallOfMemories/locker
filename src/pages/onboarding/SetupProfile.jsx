@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { takeReturnTo } from "../../utils/returnTo";
 
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -190,7 +191,13 @@ function SetupProfile() {
       console.error("Failed to refresh profile:", error);
     }
 
-    navigate("/", { replace: true });
+    // Came here from "Create Snap"? Carry on to it instead of the wall.
+    const saved = takeReturnTo();
+
+    navigate(
+      saved ? `${saved.pathname}${saved.search || ""}` : "/",
+      { replace: true, state: saved?.state || null }
+    );
   }
 
   // Success screen, then on to the main site.
