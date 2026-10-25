@@ -167,3 +167,32 @@
   font-weight: 600;
   text-decoration: none;
 }
+
+/* Visitors who are not logged in: Log in / Sign up */
+.navbar__login,
+.navbar__signup {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.navbar__login {
+  color: var(--ink);
+}
+
+.navbar__login:hover {
+  background: rgba(36, 31, 26, 0.06);
+}
+
+.navbar__signup {
+  background: var(--rust);
+  color: #fff;
+}
+
+.navbar__signup:hover {
+  background: var(--rust-deep);
+}

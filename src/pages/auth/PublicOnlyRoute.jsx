@@ -22,7 +22,11 @@ function PublicOnlyRoute() {
   }
 
   if (currentUser) {
-    const destination = location.state?.from?.pathname || "/";
+    const from = location.state?.from;
+    // keep the query too, so /?snap=<id> reopens the same Snap after login
+    const destination = from
+      ? `${from.pathname || "/"}${from.search || ""}`
+      : "/";
 
     return <Navigate to={destination} replace />;
   }

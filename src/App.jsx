@@ -35,6 +35,7 @@ import SetupProfile from "./pages/onboarding/SetupProfile";
 
 // Route guards
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
+import OptionalAuthRoute from "./pages/auth/OptionalAuthRoute";
 import PublicOnlyRoute from "./pages/auth/PublicOnlyRoute";
 import AdminRoute from "./pages/auth/AdminRoute";
 
@@ -58,12 +59,16 @@ function App() {
             <Route path="/setup-profile" element={<SetupProfile />} />
           </Route>
 
-          {/* EVERYTHING ELSE requires login + finished profile */}
-          <Route element={<ProtectedRoute />}>
+          {/* OPEN TO EVERYONE: visitors can browse the wall without logging in.
+              Like / save / report / create send them to /login first. */}
+          <Route element={<OptionalAuthRoute />}>
             <Route path="/" element={<SnapWall />} />
             <Route path="/wall" element={<Navigate to="/" replace />} />
             <Route path="/about" element={<About />} />
+          </Route>
 
+          {/* EVERYTHING ELSE requires login + finished profile */}
+          <Route element={<ProtectedRoute />}>
             <Route element={<UserLayout />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/edit" element={<EditProfile />} />

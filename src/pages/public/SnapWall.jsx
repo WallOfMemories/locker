@@ -23,6 +23,8 @@ function SnapWall() {
   // Shared links look like /?snap=<id> and open that Snap straight away.
   const [searchParams, setSearchParams] = useSearchParams();
   const linkedSnapId = searchParams.get("snap");
+  // /?space=space_006 reopens an available space after the visitor logs in.
+  const linkedSpaceId = searchParams.get("space");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -86,10 +88,14 @@ function SnapWall() {
         setSpaces(spacesData);
 
         // Opened from a shared link? Show that Snap right away.
-        const linked = new URLSearchParams(window.location.search).get("snap");
+        const query = new URLSearchParams(window.location.search);
+        const linked = query.get("snap");
+        const linkedSpace = query.get("space");
         const match = linked
           ? spacesData.find((space) => space.snapId === linked)
-          : null;
+          : linkedSpace
+            ? spacesData.find((space) => space.id === linkedSpace)
+            : null;
 
         if (match) setSelectedSpace(match);
         setSpacePrice(settingsData.spacePrice);
@@ -114,7 +120,7 @@ function SnapWall() {
   function closeDetails() {
     setSelectedSpace(null);
 
-    if (linkedSnapId) setSearchParams({}, { replace: true });
+    if (linkedSnapId || linkedSpaceId) setSearchParams({}, { replace: true });
   }
 
   return (

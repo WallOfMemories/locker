@@ -82,6 +82,19 @@ function SpaceDetails({ space, price, onClose }) {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
+  // Visitors who are not logged in can look around, but liking, saving,
+  // reporting and creating a Snap send them to /login. After login they come
+  // back to this same Snap / space on the wall.
+  function goToLogin() {
+    const search = space?.snapId
+      ? `?snap=${encodeURIComponent(space.snapId)}`
+      : space?.id
+        ? `?space=${encodeURIComponent(space.id)}`
+        : "";
+
+    navigate("/login", { state: { from: { pathname: "/", search } } });
+  }
+
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
@@ -129,7 +142,7 @@ function SpaceDetails({ space, price, onClose }) {
 
   async function handleLike() {
     if (!currentUser) {
-      alert("Please login to like a Snap.");
+      goToLogin();
       return;
     }
 
@@ -189,7 +202,7 @@ function SpaceDetails({ space, price, onClose }) {
 
   async function handleSave() {
     if (!currentUser) {
-      alert("Please login to save a Snap.");
+      goToLogin();
       return;
     }
 
@@ -216,7 +229,7 @@ function SpaceDetails({ space, price, onClose }) {
 
   function handleReportClick() {
     if (!currentUser) {
-      alert("Please login to report a Snap.");
+      goToLogin();
       return;
     }
 
@@ -428,15 +441,20 @@ function SpaceDetails({ space, price, onClose }) {
             <button
               className="snapmodal__primary"
               type="button"
-              onClick={() =>
+              onClick={() => {
+                if (!currentUser) {
+                  goToLogin();
+                  return;
+                }
+
                 navigate("/create-snap", {
                   state: {
                     space,
                   },
-                })
-              }
+                });
+              }}
             >
-              Create Snap
+              {currentUser ? "Create Snap" : "Log in to create a Snap"}
               <HiArrowRight />
             </button>
           </div>

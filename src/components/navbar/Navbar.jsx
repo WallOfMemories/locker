@@ -1,12 +1,46 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
-  const { currentUser, profile, needsProfileSetup } = useAuth();
+  const { currentUser, profile, needsProfileSetup, loading } = useAuth();
+  const { pathname } = useLocation();
 
-  // Hidden on login / register and during profile setup.
-  if (!currentUser || needsProfileSetup) return null;
+  // Hidden while checking login, on the login pages and during profile setup.
+  const onAuthPage = ["/login", "/register", "/forgot-password"].includes(
+    pathname
+  );
+
+  if (loading || needsProfileSetup || (!currentUser && onAuthPage)) {
+    return null;
+  }
+
+  // Visitors who are not logged in: logo + Log in / Sign up
+  if (!currentUser) {
+    return (
+      <>
+        <header className="navbar">
+          <div className="container navbar__inner">
+            <Link to="/" className="navbar__logo">
+              SNAP<span>WALL</span>
+            </Link>
+
+            <div className="navbar__actions">
+              <Link to="/login" className="navbar__login">
+                Log in
+              </Link>
+
+              <Link to="/register" className="navbar__signup">
+                Sign up
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <div className="navbar-spacer" aria-hidden="true" />
+      </>
+    );
+  }
 
   const name =
     profile?.displayName ||

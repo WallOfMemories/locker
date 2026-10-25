@@ -153,32 +153,26 @@ export async function unlikeSnap(snapId) {
   return data;
 }
 
-export async function getSnapLikeInfo(
-  snapId
-) {
+export async function getSnapLikeInfo(snapId) {
+  // Works for visitors who are not logged in too (they just get "not liked").
   const user = auth.currentUser;
 
-  if (!user) {
-    throw new Error("Please login first.");
-  }
+  const headers = {};
 
-  const token = await user.getIdToken();
+  if (user) {
+    headers.Authorization = `Bearer ${await user.getIdToken()}`;
+  }
 
   const response = await fetch(
     `${API_BASE_URL}/api/snaps/${snapId}/likes`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    { headers }
   );
 
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(
-      data.message ||
-        "Failed to load like information."
+      data.message || "Failed to load like information."
     );
   }
 
@@ -245,32 +239,26 @@ export async function unsaveSnap(snapId) {
   return data;
 }
 
-export async function getSnapSaveInfo(
-  snapId
-) {
+export async function getSnapSaveInfo(snapId) {
+  // Works for visitors who are not logged in too (they just get "not saved").
   const user = auth.currentUser;
 
-  if (!user) {
-    throw new Error("Please login first.");
-  }
+  const headers = {};
 
-  const token = await user.getIdToken();
+  if (user) {
+    headers.Authorization = `Bearer ${await user.getIdToken()}`;
+  }
 
   const response = await fetch(
     `${API_BASE_URL}/api/snaps/${snapId}/save`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    { headers }
   );
 
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(
-      data.message ||
-        "Failed to load save information."
+      data.message || "Failed to load save information."
     );
   }
 
