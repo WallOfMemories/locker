@@ -2,16 +2,106 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="SnapWall — pin your memory on the wall." />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Primary SEO -->
+    <title>The Locker | Pin Your Memory on the Wall</title>
+    <meta
+      name="description"
+      content="The Locker is a public SnapWall where you pin your memories. Post a photo Snap with a caption and place, or seal a Time Capsule that opens on a date you choose."
+    />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="The Locker" />
+    <link rel="canonical" href="https://thelocker.in/" />
+
+    <!-- Theme / mobile -->
     <meta name="theme-color" content="#241f1a" />
-    <meta name="google-site-verification" content="EoID_xq2pNEAjdE0H5x9Mc2xJuPhR_lm3KVPdaTuWiQ" />
-    <title>SnapWall || My Memory on Earth</title>
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="application-name" content="The Locker" />
+    <meta name="apple-mobile-web-app-title" content="The Locker" />
+
+    <!-- Google Search Console verification -->
+    <meta
+      name="google-site-verification"
+      content="EoID_xq2pNEAjdE0H5x9Mc2xJuPhR_lm3KVPdaTuWiQ"
+    />
+
+    <!-- Faster font loading (fonts are requested by the page styles) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Open Graph: social sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Locker" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:title" content="The Locker | Pin Your Memory on the Wall" />
+    <meta
+      property="og:description"
+      content="Pin your memory on the wall. Share photo Snaps, or seal a Time Capsule that opens on a date you choose."
+    />
+    <meta property="og:url" content="https://thelocker.in/" />
+    <meta property="og:image" content="https://thelocker.in/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The Locker SnapWall: pin your memory on the wall"
+    />
+
+    <!-- Twitter / X sharing -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Locker | Pin Your Memory on the Wall" />
+    <meta
+      name="twitter:description"
+      content="Pin your memory on the wall. Share photo Snaps, or seal a Time Capsule that opens on a date you choose."
+    />
+    <meta name="twitter:image" content="https://thelocker.in/og-image.png" />
+    <meta
+      name="twitter:image:alt"
+      content="The Locker SnapWall: pin your memory on the wall"
+    />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://thelocker.in/#website",
+            "name": "The Locker",
+            "alternateName": "SnapWall",
+            "url": "https://thelocker.in/",
+            "inLanguage": "en-IN",
+            "description": "A public wall where people pin their memories as photo Snaps and Time Capsules."
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://thelocker.in/#organization",
+            "name": "The Locker",
+            "url": "https://thelocker.in/",
+            "logo": "https://thelocker.in/icon-512.png"
+          }
+        ]
+      }
+    </script>
   </head>
+
   <body>
-    <noscript>SnapWall needs JavaScript to run. Please enable it and reload.</noscript>
+    <noscript>
+      The Locker needs JavaScript to run. Please enable JavaScript and reload.
+    </noscript>
+
     <div id="root"></div>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

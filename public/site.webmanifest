@@ -1,0 +1,15 @@
+{
+  "name": "The Locker",
+  "short_name": "The Locker",
+  "description": "Pin your memory on the wall. Share photo Snaps and seal Time Capsules on a public wall.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f1e3",
+  "theme_color": "#241f1a",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
