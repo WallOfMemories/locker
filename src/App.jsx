@@ -7,7 +7,6 @@ import { NotificationProvider } from "./context/NotificationContext";
 
 // Main pages
 import TheLocker from "./pages/public/TheLocker";
-import About from "./pages/public/About";
 
 // Auth pages
 import Login from "./pages/auth/Login";
