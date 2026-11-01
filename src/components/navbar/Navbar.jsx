@@ -22,7 +22,7 @@ function Navbar() {
         <header className="navbar">
           <div className="container navbar__inner">
             <Link to="/" className="navbar__logo">
-              SNAP<span>WALL</span>
+              THE<span>LOCKER</span>
             </Link>
 
             <div className="navbar__actions">
@@ -56,7 +56,7 @@ function Navbar() {
     <header className="navbar">
       <div className="container navbar__inner">
         <Link to="/" className="navbar__logo">
-          SNAP<span>WALL</span>
+          THE<span>LOCKER</span>
         </Link>
 
         <div className="navbar__actions">

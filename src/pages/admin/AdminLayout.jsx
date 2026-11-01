@@ -65,10 +65,10 @@ function AdminLayout() {
             <Link
               to="/"
               className="admin-sidebar__back"
-              title="Back to SnapWall"
+              title="Back to The Locker"
             >
               <FiArrowLeft />
-              <span>Back to SnapWall</span>
+              <span>Back to The Locker</span>
             </Link>
 
             <div className="user-sidebar__user">

@@ -101,7 +101,7 @@ function MySnaps() {
                 navigate("/wall")
               }
             >
-              Explore SnapWall
+              Explore The Locker
             </button>
           </div>
         ) : (

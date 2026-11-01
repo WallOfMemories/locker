@@ -151,7 +151,7 @@ function HelpSection() {
         <h3>Community guidelines</h3>
 
         <p className="settings__hint">
-          SnapWall is a shared wall, so a few simple rules keep it a nice place
+          The Locker is a shared wall, so a few simple rules keep it a nice place
           for everyone:
         </p>
 

@@ -44,7 +44,7 @@ function getInitials(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// Link that opens this Snap on the wall (SnapWall reads ?snap=<id>).
+// Link that opens this Snap on the wall (The Locker reads ?snap=<id>).
 function buildSnapLink(snapId) {
   return `${window.location.origin}/?snap=${encodeURIComponent(snapId)}`;
 }
@@ -227,7 +227,7 @@ function SnapViewer({
 
       onHiddenChange?.(snap, next);
       showToast(
-        next ? "Hidden — only you can see it" : "Visible on SnapWall again"
+        next ? "Hidden — only you can see it" : "Visible on The Locker again"
       );
     } catch (err) {
       showToast(err.message || "Couldn't update this Snap.", "error");
@@ -261,7 +261,7 @@ function SnapViewer({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "SnapWall",
+          title: "The Locker",
           text: snap.caption || "Check out this Snap",
           url: link,
         });
@@ -361,7 +361,7 @@ function SnapViewer({
 
             {modHidden && (
               <p className="sv__notice">
-                Hidden by SnapWall moderators — only you can see this Snap.
+                Hidden by The Locker moderators — only you can see this Snap.
               </p>
             )}
 
@@ -369,7 +369,7 @@ function SnapViewer({
             {ownerHidden && !modHidden && (
               <p className="sv__notice">
                 You've hidden this Snap — only you can see it. Your space is
-                still yours. Unhide it to show it on SnapWall again.
+                still yours. Unhide it to show it on The Locker again.
               </p>
             )}
 

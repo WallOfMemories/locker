@@ -34,7 +34,7 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function SnapWallGrid({ spaces, onSelect, myId }) {
+function TheLockerGrid({ spaces, onSelect, myId }) {
   const viewportRef = useRef(null);
   const worldRef = useRef(null);
 
@@ -448,7 +448,7 @@ function SnapWallGrid({ spaces, onSelect, myId }) {
     <>
       <div className="wall-viewport" ref={viewportRef}>
         {spaces.length === 0 && (
-          <div className="snapwall-status">
+          <div className="thelocker-status">
             <p>There are no spaces on the wall yet.</p>
           </div>
         )}
@@ -513,4 +513,4 @@ function SnapWallGrid({ spaces, onSelect, myId }) {
   );
 }
 
-export default SnapWallGrid;
+export default TheLockerGrid;

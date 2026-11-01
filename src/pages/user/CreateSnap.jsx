@@ -22,7 +22,7 @@ import {
   releaseSpace,
   verifyPayment,
 } from "../../services/paymentService";
-import { getSnapWallSettings } from "../../services/settingsApi";
+import { getTheLockerSettings } from "../../services/settingsApi";
 import { loadRazorpay } from "../../utils/loadRazorpay";
 import { useAuth } from "../../context/AuthContext";
 import LocationPicker from "../../components/snap/LocationPicker";
@@ -108,7 +108,7 @@ function CreateSnap() {
   useEffect(() => {
     let cancelled = false;
 
-    getSnapWallSettings()
+    getTheLockerSettings()
       .then((settings) => {
         const value = Number(settings?.spacePrice);
 
@@ -134,7 +134,7 @@ function CreateSnap() {
           <h1 className="createsnap__title">No space selected</h1>
 
           <p className="createsnap__subtitle">
-            Please select an available space from SnapWall first.
+            Please select an available space from The Locker first.
           </p>
 
           <button
@@ -143,7 +143,7 @@ function CreateSnap() {
             onClick={() => navigate("/wall")}
           >
             <HiArrowLeft />
-            Back to SnapWall
+            Back to The Locker
           </button>
         </div>
       </main>
@@ -199,7 +199,7 @@ function CreateSnap() {
         order_id: order.id,
         amount: order.amount,
         currency: order.currency,
-        name: "SnapWall",
+        name: "The Locker",
         description: `Space ${selectedSpace.id}`,
         prefill: {
           name: profile?.displayName || currentUser?.displayName || "",
@@ -466,7 +466,7 @@ function CreateSnap() {
           <h1 className="createsnap__title">Create your Snap</h1>
 
           <p className="createsnap__subtitle">
-            Pick a photo, add a few words, and place your memory on SnapWall.
+            Pick a photo, add a few words, and place your memory on The Locker.
           </p>
         </header>
 

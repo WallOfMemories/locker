@@ -311,7 +311,7 @@ function AdminWall() {
               </div>
 
               <p className="ad-panel__sub">
-                When this is on, SnapWall adds spaces by itself right after a
+                When this is on, The Locker adds spaces by itself right after a
                 Snap is posted and the wall is at least the chosen percentage
                 full.
               </p>

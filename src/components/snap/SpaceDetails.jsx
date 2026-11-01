@@ -27,7 +27,7 @@ import "./SpaceDetails.css";
 
 // FIXED (share): the Share button used to copy window.location.href, which on
 // the wall is just the home page — so the person you sent it to never saw the
-// Snap. A Snap's real link is /?snap=<id>; SnapWall reads that and opens it.
+// Snap. A Snap's real link is /?snap=<id>; The Locker reads that and opens it.
 function buildSnapLink(snapId) {
   return `${window.location.origin}/?snap=${encodeURIComponent(snapId)}`;
 }
@@ -189,7 +189,7 @@ function SpaceDetails({ space, price, onClose }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "SnapWall",
+          title: "The Locker",
           text: space.caption || "Check out this Snap",
           url: link,
         });
@@ -323,7 +323,7 @@ function SpaceDetails({ space, price, onClose }) {
                 ? isOwner
                   ? "You've hidden this Snap. Your space is still yours — unhide it from your profile to show it again."
                   : "The owner has hidden this Snap."
-                : "This Snap has been hidden by the SnapWall moderators."}
+                : "This Snap has been hidden by The Locker moderators."}
             </p>
           </div>
         ) : isLocked ? (
@@ -441,7 +441,7 @@ function SpaceDetails({ space, price, onClose }) {
             <h2 className="snapmodal__title">Make this space yours.</h2>
 
             <p className="snapmodal__description">
-              Create a Snap and place your memory on SnapWall.
+              Create a Snap and place your memory on The Locker.
             </p>
 
             <div className="snapmodal__price">

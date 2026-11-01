@@ -74,7 +74,7 @@ function LikedSnaps() {
         <h1>Liked Snaps</h1>
 
         <p>
-          Snaps you've liked on SnapWall.
+          Snaps you've liked on The Locker.
         </p>
 
         {error && (
@@ -88,7 +88,7 @@ function LikedSnaps() {
             <h2>No liked Snaps yet.</h2>
 
             <p>
-              Like a memory on SnapWall and
+              Like a memory on The Locker and
               it will appear here.
             </p>
           </div>

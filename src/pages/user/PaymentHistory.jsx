@@ -91,7 +91,7 @@ function PaymentHistory() {
     <div className="payhist">
       <header className="payhist__header">
         <h1>Payment History</h1>
-        <p>Every payment you've made on SnapWall.</p>
+        <p>Every payment you've made on The Locker.</p>
       </header>
 
       {error && <p className="payhist__note payhist__note--error">{error}</p>}

@@ -6,7 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 
 // Main pages
-import SnapWall from "./pages/public/SnapWall";
+import TheLocker from "./pages/public/TheLocker";
 import About from "./pages/public/About";
 
 // Auth pages
@@ -62,7 +62,7 @@ function App() {
           {/* OPEN TO EVERYONE: visitors can browse the wall without logging in.
               Like / save / report / create send them to /login first. */}
           <Route element={<OptionalAuthRoute />}>
-            <Route path="/" element={<SnapWall />} />
+            <Route path="/" element={<TheLocker />} />
             <Route path="/wall" element={<Navigate to="/" replace />} />
             <Route path="/about" element={<About />} />
           </Route>

@@ -84,12 +84,12 @@ function TimeCapsules() {
           <h2>Nothing sealed yet</h2>
 
           <p>
-            Pick a space on SnapWall and choose Time Capsule to lock a Snap
+            Pick a space on The Locker and choose Time Capsule to lock a Snap
             until a date you choose.
           </p>
 
           <button type="button" onClick={() => navigate("/wall")}>
-            Explore SnapWall
+            Explore The Locker
           </button>
         </div>
       ) : (

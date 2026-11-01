@@ -3,7 +3,7 @@
 // instead of landing back on the wall. Kept in sessionStorage so it survives
 // switching between Login / Register, Google sign-in and page refreshes.
 
-const KEY = "snapwall.returnTo";
+const KEY = "thelocker.returnTo";
 const MAX_AGE_MS = 30 * 60 * 1000; // forgotten after 30 minutes
 
 export function setReturnTo({ pathname = "/", search = "", state = null }) {

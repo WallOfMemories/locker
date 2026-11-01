@@ -1,13 +1,13 @@
 
 import { API_BASE_URL } from "../config";
-export async function getSnapWallSettings() {
+export async function getTheLockerSettings() {
   const response = await fetch(
     `${API_BASE_URL}/api/settings`
   );
 
   if (!response.ok) {
     throw new Error(
-      "Failed to fetch SnapWall settings."
+      "Failed to fetch The Locker settings."
     );
   }
 

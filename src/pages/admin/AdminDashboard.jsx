@@ -78,7 +78,7 @@ function AdminDashboard() {
     <div className="ad-page">
       <div className="ad-head">
         <h1>Dashboard</h1>
-        <p>A quick look at how SnapWall is doing.</p>
+        <p>A quick look at how The Locker is doing.</p>
       </div>
 
       <div className="ad-stats">

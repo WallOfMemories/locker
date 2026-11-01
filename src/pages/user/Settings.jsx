@@ -38,7 +38,7 @@ const SECTIONS = [
   {
     id: "terms",
     title: "Terms of Use",
-    description: "The rules for using SnapWall.",
+    description: "The rules for using The Locker.",
     icon: FiFileText,
     Component: TermsSection,
   },

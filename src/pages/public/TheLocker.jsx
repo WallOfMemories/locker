@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 // CHANGED: the zoom-and-drag canvas is replaced by a grid that fits the screen
-import SnapWallGrid from "../../components/snap/SnapWallGrid";
+import TheLockerGrid from "../../components/snap/TheLockerGrid";
 import SpaceDetails from "../../components/snap/SpaceDetails";
 
 // NEW: who is using the site, so their own Snaps can be highlighted
 import { useAuth } from "../../context/AuthContext";
 
 import { getSpaces } from "../../services/spaceApi";
-import { getSnapWallSettings } from "../../services/settingsApi";
+import { getTheLockerSettings } from "../../services/settingsApi";
 
-import "./SnapWall.css";
+import "./TheLocker.css";
 
-function SnapWall() {
+function TheLocker() {
   const { currentUser } = useAuth();
 
   const [spaces, setSpaces] = useState([]);
@@ -73,14 +73,14 @@ function SnapWall() {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadSnapWall() {
+    async function loadTheLocker() {
       try {
         setLoading(true);
         setError("");
 
         const [spacesData, settingsData] = await Promise.all([
           getSpaces(),
-          getSnapWallSettings(),
+          getTheLockerSettings(),
         ]);
 
         if (cancelled) return;
@@ -100,17 +100,17 @@ function SnapWall() {
         if (match) setSelectedSpace(match);
         setSpacePrice(settingsData.spacePrice);
       } catch (error) {
-        console.error("Failed to load SnapWall:", error);
+        console.error("Failed to load The Locker:", error);
 
         if (!cancelled) {
-          setError("Unable to load SnapWall. Please try again.");
+          setError("Unable to load The Locker. Please try again.");
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
-    loadSnapWall();
+    loadTheLocker();
 
     return () => {
       cancelled = true;
@@ -124,13 +124,13 @@ function SnapWall() {
   }
 
   return (
-    <main className="snapwall-page">
+    <main className="thelocker-page">
       {loading && (
-        <div className="snapwall-status">Loading SnapWall...</div>
+        <div className="thelocker-status">Loading TheLocker...</div>
       )}
 
       {!loading && error && (
-        <div className="snapwall-status">
+        <div className="thelocker-status">
           <p>{error}</p>
 
           <button
@@ -143,7 +143,7 @@ function SnapWall() {
       )}
 
       {!loading && !error && (
-        <SnapWallGrid
+        <TheLockerGrid
           spaces={spaces}
           onSelect={setSelectedSpace}
           myId={currentUser?.uid}
@@ -159,4 +159,4 @@ function SnapWall() {
   );
 }
 
-export default SnapWall;
+export default TheLocker;

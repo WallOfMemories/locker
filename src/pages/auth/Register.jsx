@@ -226,7 +226,7 @@ function Register() {
           <span className="pin" aria-hidden="true" />
 
           <div className="photo-card__body">
-            <p className="photo-card__eyebrow">WELCOME TO SNAPWALL</p>
+            <p className="photo-card__eyebrow">WELCOME TO THE LOCKER</p>
             <h2 className="photo-card__title">Create your account</h2>
             <p className="photo-card__desc">Start creating and sharing your memories.</p>
 

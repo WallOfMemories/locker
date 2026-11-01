@@ -6,7 +6,7 @@ export async function getSpaces() {
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch SnapWall spaces.");
+    throw new Error("Failed to fetch The Locker spaces.");
   }
 
   const data = await response.json();

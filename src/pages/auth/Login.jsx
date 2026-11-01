@@ -221,7 +221,7 @@ function Login() {
           <span className="pin" aria-hidden="true" />
 
           <div className="photo-card__body">
-            <p className="photo-card__eyebrow">SnapWall</p>
+            <p className="photo-card__eyebrow">The Locker</p>
             <h2 className="photo-card__title">Welcome back</h2>
             <p className="photo-card__desc">Sign in to manage your Snaps and profile.</p>
 

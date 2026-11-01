@@ -85,7 +85,7 @@ function SavedSnaps() {
             <h2>No saved Snaps yet.</h2>
 
             <p>
-              Save memories from SnapWall and
+              Save memories from The Locker and
               they'll appear here.
             </p>
           </div>

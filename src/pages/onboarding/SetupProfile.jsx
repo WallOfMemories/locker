@@ -357,7 +357,7 @@ function SetupProfile() {
 
               <p className="setup-success__name">{createdProfile.displayName}</p>
               <p className="setup-success__username">@{createdProfile.username}</p>
-              <p className="setup-success__hint">Taking you to SnapWall...</p>
+              <p className="setup-success__hint">Taking you to The Locker...</p>
 
               <button
                 type="button"

@@ -43,7 +43,7 @@ const TABS = [
     empty: {
       icon: FiCamera,
       title: "Share your first Snap",
-      text: "Pick a space on SnapWall and your Snaps will appear here.",
+      text: "Pick a space on The Locker and your Snaps will appear here.",
       action: true,
     },
   },
@@ -65,7 +65,7 @@ const TABS = [
     empty: {
       icon: FiHeart,
       title: "No liked Snaps yet",
-      text: "Snaps you like on SnapWall will appear here.",
+      text: "Snaps you like on The Locker will appear here.",
     },
   },
   {
@@ -75,7 +75,7 @@ const TABS = [
     empty: {
       icon: FiBookmark,
       title: "No saved Snaps yet",
-      text: "Save Snaps from SnapWall to find them here.",
+      text: "Save Snaps from The Locker to find them here.",
     },
   },
 ];
@@ -127,7 +127,7 @@ function SnapTile({ snap, locked, now, onOpen }) {
           className="ptile__hidden"
           title={
             snap.status === "hidden"
-              ? "Hidden by SnapWall moderators — only you can see it"
+              ? "Hidden by The Locker moderators — only you can see it"
               : "Hidden by you — only you can see it"
           }
         >
@@ -438,7 +438,7 @@ function Profile() {
         </button>
 
         <button type="button" onClick={() => navigate("/wall")}>
-          Open SnapWall
+          Open The Locker
         </button>
       </div>
 
@@ -476,7 +476,7 @@ function Profile() {
 
           {activeTab.empty.action && (
             <button type="button" onClick={() => navigate("/wall")}>
-              Explore SnapWall
+              Explore The Locker
             </button>
           )}
         </div>

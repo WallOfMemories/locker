@@ -1,22 +1,22 @@
 // All the written text of the Settings page in ONE place, so it can be
 // edited without touching any component.
 //
-// NOTE: the Terms below are a plain-language draft that matches how SnapWall
+// NOTE: the Terms below are a plain-language draft that matches how The Locker
 // works today. Have them reviewed (ideally by a lawyer) before launch, and
 // update TERMS_UPDATED whenever they change.
 
 // Where "Contact support" goes. Set VITE_SUPPORT_EMAIL in the frontend .env.
 export const SUPPORT_EMAIL =
-  import.meta.env.VITE_SUPPORT_EMAIL || "support@snapwall.app";
+  import.meta.env.VITE_SUPPORT_EMAIL || "support@thelocker.in";
 
 export const TERMS_UPDATED = "15 October 2026";
 
 export const TERMS = [
   {
-    title: "1. Using SnapWall",
+    title: "1. Using The Locker",
     body: [
-      "SnapWall is a shared wall made of numbered spaces. Each space can hold one Snap: a photo with a caption, and optionally a place and a Time Capsule date.",
-      "By creating an account or using SnapWall you agree to these terms. If you do not agree, please do not use the service.",
+      "The Locker is a shared wall made of numbered spaces. Each space can hold one Snap: a photo with a caption, and optionally a place and a Time Capsule date.",
+      "By creating an account or using The Locker you agree to these terms. If you do not agree, please do not use the service.",
     ],
   },
   {
@@ -29,7 +29,7 @@ export const TERMS = [
   {
     title: "3. Your Snaps and memories",
     body: [
-      "You own the photos and captions you post. By posting, you give SnapWall permission to store and show them on the wall, in other people's Liked and Saved lists, and in share links, for as long as the Snap exists.",
+      "You own the photos and captions you post. By posting, you give The Locker permission to store and show them on the wall, in other people's Liked and Saved lists, and in share links, for as long as the Snap exists.",
       "Only post photos you have the right to share, and nothing that shows someone in a private moment without their consent.",
       "You can hide a Snap (it stays yours but nobody else sees it), edit its caption, location or Time Capsule date, or delete it at any time.",
     ],
@@ -74,8 +74,8 @@ export const TERMS = [
   {
     title: "9. Service and changes",
     body: [
-      "We work hard to keep SnapWall running but cannot promise it will always be available or free of errors.",
-      "We may update these terms from time to time. If a change matters, we will let you know in the app. Continuing to use SnapWall after a change means you accept it.",
+      "We work hard to keep The Locker running but cannot promise it will always be available or free of errors.",
+      "We may update these terms from time to time. If a change matters, we will let you know in the app. Continuing to use The Locker after a change means you accept it.",
     ],
   },
   {

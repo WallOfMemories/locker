@@ -290,7 +290,7 @@ function EditProfile() {
     <div className="editprofile">
       <header className="editprofile__header">
         <h1>Edit profile</h1>
-        <p>Update how you appear on SnapWall.</p>
+        <p>Update how you appear on The Locker.</p>
       </header>
 
       {error && (

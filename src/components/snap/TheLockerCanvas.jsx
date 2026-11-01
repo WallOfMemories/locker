@@ -23,7 +23,7 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function SnapWallCanvas({ spaces, onSelect }) {
+function TheLockerCanvas({ spaces, onSelect }) {
   const viewportRef = useRef(null);
   const worldRef = useRef(null);
 
@@ -498,4 +498,4 @@ function SnapWallCanvas({ spaces, onSelect }) {
   );
 }
 
-export default SnapWallCanvas;
+export default TheLockerCanvas;

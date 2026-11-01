@@ -1,11 +1,11 @@
 /* ============================================================
    The wall page — NEW LAYOUT
    The wall fills everything under the navbar. Boxes are laid out by
-   SnapWallGrid so they cover the whole area (no empty margins, nothing
+   TheLockerGrid so they cover the whole area (no empty margins, nothing
    cut off). If there are too many boxes for them to stay a usable size,
    the wall scrolls down instead.
    ============================================================ */
-.snapwall-page {
+.thelocker-page {
   /* CHANGED: white, like the rest of the site (the gray was #e4e7ea).
      Change this one value to restyle the wall's background. */
   --wall-bg: #ffffff;
@@ -18,7 +18,7 @@
 }
 
 /* The area the wall is shown in. Drag to move, wheel / pinch to zoom
-   (see SnapWallGrid.jsx) — so the browser must not scroll or zoom it. */
+   (see TheLockerGrid.jsx) — so the browser must not scroll or zoom it. */
 .wall-viewport {
   position: absolute;
   inset: 0;
@@ -35,7 +35,7 @@
   cursor: grabbing !important;
 }
 
-/* The wall itself; SnapWallGrid moves and scales this. */
+/* The wall itself; TheLockerGrid moves and scales this. */
 .wall-world {
   position: absolute;
   top: 0;
@@ -93,7 +93,7 @@
 }
 
 /* CHANGED: a real grid (was rows of flexible boxes). The column / row counts
-   are set by SnapWallGrid, so every row lines up. */
+   are set by TheLockerGrid, so every row lines up. */
 .wall-grid {
   display: grid;
   /* CHANGED: tighter spacing (was 10px / 12px) */
@@ -109,12 +109,12 @@
 }
 
 @media (max-width: 720px) {
-  .snapwall-page {
+  .thelocker-page {
     inset: 57px 0 0 0;
   }
 }
 
-.snapwall-status {
+.thelocker-status {
   position: absolute;
   inset: 0;
   display: flex;
@@ -125,7 +125,7 @@
   color: var(--text-secondary);
 }
 
-.snapwall-status button {
+.thelocker-status button {
   padding: 10px 18px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);

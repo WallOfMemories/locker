@@ -9,7 +9,7 @@
    .snap-space is the box (and the size "container"); everything visual is
    drawn on .snap-space__card inside it and sized in container units (cqmin),
    so the design scales with the box. Where it sits in the grid (width,
-   height) is decided by .wall-grid in SnapWall.css.
+   height) is decided by .wall-grid in TheLocker.css.
    ============================================================ */
 .snap-space {
   --paper: #f7f1e3;

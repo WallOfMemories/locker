@@ -152,7 +152,7 @@ function pickScroll(count, availW, target) {
 }
 
 // ------------------------------------------------------------
-// Used by the zoomable wall (SnapWallGrid)
+// Used by the zoomable wall (TheLockerGrid)
 // ------------------------------------------------------------
 
 // Height of the whole wall in px: exactly the screen in "fit" mode, taller

@@ -93,7 +93,7 @@ function ReportDialog({ onSubmit, onClose }) {
             <h3 className="reportdlg__title">Report sent</h3>
 
             <p className="reportdlg__text">
-              Thanks for helping keep SnapWall friendly. Our team will review
+              Thanks for helping keep The Locker friendly. Our team will review
               this Snap.
             </p>
 
