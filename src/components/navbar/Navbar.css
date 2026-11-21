@@ -55,6 +55,27 @@
 /* ------------------------------------------------------------
    Logo
    ------------------------------------------------------------ */
+/* NEW: stacks the logo with the tagline underneath it */
+.navbar__brand {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+/* NEW: tagline sits right under THE LOCKER, small and muted */
+.navbar__tagline {
+  margin: 3px 0 0;
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
 .navbar__logo {
   flex-shrink: 0;
   font-family: var(--font-display);
@@ -140,6 +161,12 @@
 
   .navbar__inner {
     height: 56px;
+  }
+
+  /* NEW: slightly smaller tagline on phones so it fits the 56px bar */
+  .navbar__tagline {
+    font-size: 0.58rem;
+    margin-top: 2px;
   }
 
   .navbar-spacer {

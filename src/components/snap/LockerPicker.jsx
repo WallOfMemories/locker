@@ -26,12 +26,18 @@ const PRESETS = [
   { label: "1 week", value: () => nineAm((d) => d.setDate(d.getDate() + 7)) },
   { label: "1 month", value: () => nineAm((d) => d.setMonth(d.getMonth() + 1)) },
   { label: "1 year", value: () => nineAm((d) => d.setFullYear(d.getFullYear() + 1)) },
+  // NEW: long-haul presets now that the 10-year cap is removed
+  { label: "10 years", value: () => nineAm((d) => d.setFullYear(d.getFullYear() + 10)) },
+  { label: "50 years", value: () => nineAm((d) => d.setFullYear(d.getFullYear() + 50)) },
+  { label: "100 years", value: () => nineAm((d) => d.setFullYear(d.getFullYear() + 100)) },
 ];
 
 /**
  * The "locker": pick the future date + time when a Time Capsule opens
  * to everyone. `value` is "YYYY-MM-DDTHH:mm" (local time) or "".
  */
+// CHANGED: no 10-year limit any more. The date input's max="9999-12-31" below
+// is the storage ceiling (Firestore Timestamps stop at year 9999).
 function LockerPicker({ value, onChange }) {
   // `now` re-renders the countdown / validation every 30s.
   const [now, setNow] = useState(() => Date.now());
@@ -107,6 +113,7 @@ function LockerPicker({ value, onChange }) {
             type="date"
             value={datePart}
             min={toLocalInputValue(new Date(now)).slice(0, 10)}
+            max="9999-12-31"
             onChange={handleDate}
           />
         </label>

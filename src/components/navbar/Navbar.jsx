@@ -21,9 +21,13 @@ function Navbar() {
       <>
         <header className="navbar">
           <div className="container navbar__inner">
-            <Link to="/" className="navbar__logo">
-              THE<span>LOCKER</span>
-            </Link>
+            {/* NEW: logo + tagline stacked in one brand block */}
+            <div className="navbar__brand">
+              <Link to="/" className="navbar__logo">
+                THE<span>LOCKER</span>
+              </Link>
+              <p className="navbar__tagline">My Memory on the earth</p>
+            </div>
 
             <div className="navbar__actions">
               <Link to="/login" className="navbar__login">
@@ -55,9 +59,13 @@ function Navbar() {
     <>
     <header className="navbar">
       <div className="container navbar__inner">
-        <Link to="/" className="navbar__logo">
-          THE<span>LOCKER</span>
-        </Link>
+        {/* NEW: logo + tagline stacked in one brand block */}
+        <div className="navbar__brand">
+          <Link to="/" className="navbar__logo">
+            THE<span>LOCKER</span>
+          </Link>
+          <p className="navbar__tagline">Leave your memory on these Earth</p>
+        </div>
 
         <div className="navbar__actions">
           {/* CHANGED: the admin link used to say "Reports". The admin area now
