@@ -16,6 +16,7 @@ import {
 import {
   uploadSnapImage,
   validateImage,
+  MAX_SNAP_MB,
 } from "../../services/storageService";
 import {
   createSpaceOrder,
@@ -96,6 +97,16 @@ function CreateSnap() {
   const uploadedRef = useRef(null); // { file, downloadURL, storagePath } — never upload twice
 
   const busy = stage !== "idle";
+
+  // NEW: the error is shown at the bottom, right above the button. Scroll it
+  // into view whenever a new error appears so nobody misses it.
+  const errorRef = useRef(null);
+
+  useEffect(() => {
+    if (error) {
+      errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [error]);
 
   // Free the preview URL when it changes or the page unmounts
   useEffect(() => {
@@ -267,6 +278,15 @@ function CreateSnap() {
       return;
     }
 
+    // NEW: check the size right when the photo is picked (not only on pay),
+    // so the person knows straight away.
+    try {
+      validateImage(file);
+    } catch (err) {
+      setError(err.message);
+      return;
+    }
+
     setImage(file);
     setError("");
     setPreviewUrl(URL.createObjectURL(file));
@@ -435,7 +455,9 @@ function CreateSnap() {
         setError(message);
       } else if (paidId && !pendingVerifyRef.current) {
         setError(
-          `${message} Your payment is safe — press the button again to finish. You won't be charged twice.`
+          // CHANGED: add a full stop if the message has none (it used to read
+          // "...at most 10 years Your payment is safe").
+          `${/[.!?]$/.test(message) ? message : `${message}.`} Your payment is safe — press the button again to finish. You won't be charged twice.`
         );
       } else {
         setError(message);
@@ -469,13 +491,6 @@ function CreateSnap() {
             Pick a photo, add a few words, and place your memory on The Locker.
           </p>
         </header>
-
-        {error && (
-          <div className="createsnap__error" role="alert">
-            <HiExclamationCircle />
-            <span>{error}</span>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="createsnap__form">
           {/* ---------- Photo ---------- */}
@@ -542,7 +557,7 @@ function CreateSnap() {
 
                 {/* NEW: same limits the upload enforces (storageService.js) */}
                 <span className="createsnap__drop-note">
-                  JPG, PNG or WebP · up to 5 MB
+                  JPG, PNG or WebP · up to {MAX_SNAP_MB} MB
                 </span>
               </label>
             )}
@@ -648,6 +663,14 @@ function CreateSnap() {
               )}
             </div>
           </section>
+
+          {/* CHANGED: error message moved down, right above the buttons */}
+          {error && (
+            <div className="createsnap__error" role="alert" ref={errorRef}>
+              <HiExclamationCircle />
+              <span>{error}</span>
+            </div>
+          )}
 
           {/* ---------- Actions ---------- */}
           <div className="createsnap__actions">

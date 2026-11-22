@@ -6,7 +6,10 @@ import {
 
 import { storage } from "./firebase";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+// CHANGED: Snap photos can now be up to 50 MB. Profile photos stay at 5 MB.
+// (The same numbers are enforced by storage.rules — change both together.)
+export const MAX_SNAP_MB = 50;
+export const MAX_PROFILE_MB = 5;
 
 const ALLOWED_TYPES = [
   "image/jpeg",
@@ -17,7 +20,9 @@ const ALLOWED_TYPES = [
 // CHANGED: exported, so the Create Snap page can check the photo BEFORE the
 // person pays (the photo is uploaded after payment — a photo that is too big
 // must be caught first, not after the money has moved).
-export function validateImage(file) {
+// CHANGED: takes the size limit, so Snap photos (50 MB) and profile photos
+// (5 MB) can use the same check.
+export function validateImage(file, maxMb = MAX_SNAP_MB) {
   if (!file) {
     throw new Error("Please select an image.");
   }
@@ -28,9 +33,12 @@ export function validateImage(file) {
     );
   }
 
-  if (file.size > MAX_FILE_SIZE) {
+  if (file.size > maxMb * 1024 * 1024) {
+    // CHANGED: tell the person the real size so they know how much to shrink.
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+
     throw new Error(
-      "Image size must be 5 MB or less."
+      `This photo is ${sizeMb} MB, but the limit is ${maxMb} MB. Please choose a smaller photo.`
     );
   }
 }
@@ -83,7 +91,7 @@ export async function uploadProfileImage(
   file,
   userId
 ) {
-  validateImage(file);
+  validateImage(file, MAX_PROFILE_MB); // CHANGED: profile photos stay at 5 MB
 
   if (!userId) {
     throw new Error(
