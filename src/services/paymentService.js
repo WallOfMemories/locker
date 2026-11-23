@@ -23,7 +23,14 @@ async function request(path, body, method = "POST") {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.message || "Request failed.");
+    const failure = new Error(data.message || "Request failed.");
+
+    // NEW: keep the server's reason (e.g. ALREADY_PAID + the payment id) so
+    // the Create Snap page can resume instead of showing a dead end.
+    failure.code = data.code;
+    failure.paymentId = data.paymentId;
+
+    throw failure;
   }
 
   return data;

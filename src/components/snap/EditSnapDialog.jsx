@@ -156,7 +156,7 @@ function EditSnapDialog({ snap, onClose, onSaved }) {
 
           <section className="editsnap__section">
             <div className="editsnap__label-row">
-              <span className="editsnap__label">Location</span>
+              <span className="editsnap__label">Country</span>
               <span>Optional</span>
             </div>
 

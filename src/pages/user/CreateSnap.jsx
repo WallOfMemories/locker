@@ -13,6 +13,15 @@ import {
   HiCheckCircle,
 } from "react-icons/hi";
 
+import { compressImage } from "../../utils/compressImage";
+import {
+  loadDraft,
+  saveDraft,
+  clearDraft,
+  loadDraftImage,
+  saveDraftImage,
+  deleteDraftImage,
+} from "../../utils/snapDraft";
 import {
   uploadSnapImage,
   validateImage,
@@ -101,6 +110,16 @@ function CreateSnap() {
 
   const busy = stage !== "idle";
 
+  // NEW: upload progress (0–100), whether a photo is being optimised, and
+  // whether we put back an unfinished Snap after a refresh.
+  const [uploadPercent, setUploadPercent] = useState(0);
+  const [optimizing, setOptimizing] = useState(false);
+  const [restored, setRestored] = useState(false);
+  const [draftReady, setDraftReady] = useState(false);
+
+  const uid = currentUser?.uid;
+  const spaceKey = selectedSpace?.id;
+
   // NEW: the error is shown at the bottom, right above the button. Scroll it
   // into view whenever a new error appears so nobody misses it.
   const errorRef = useRef(null);
@@ -137,6 +156,73 @@ function CreateSnap() {
       cancelled = true;
     };
   }, [bidAmount]);
+
+  // NEW: put back an unfinished Snap (text, photo, and the payment that was
+  // already made) after a refresh or a closed tab.
+  useEffect(() => {
+    if (!uid || !spaceKey) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const draft = loadDraft(uid, spaceKey);
+      const file = await loadDraftImage(uid, spaceKey);
+
+      if (cancelled) return;
+
+      if (draft) {
+        setCaption(draft.caption || "");
+        setSnapType(draft.snapType || "post");
+        setSnapLocation(draft.snapLocation || null);
+        setUnlockAt(draft.unlockAt || "");
+        // a payment id handed in from Payment History wins over the saved one
+        setPaymentId((current) => current || draft.paymentId || "");
+
+        if (draft.pendingVerify) pendingVerifyRef.current = draft.pendingVerify;
+      }
+
+      if (file) {
+        setImage(file);
+        setPreviewUrl(URL.createObjectURL(file));
+      }
+
+      if (draft || file) setRestored(true);
+
+      setDraftReady(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uid, spaceKey]);
+
+  // NEW: keep the draft up to date as the person types and pays.
+  useEffect(() => {
+    if (!draftReady || !uid || !spaceKey) return;
+
+    saveDraft(uid, spaceKey, {
+      caption,
+      snapType,
+      snapLocation,
+      unlockAt,
+      paymentId,
+    });
+  }, [draftReady, uid, spaceKey, caption, snapType, snapLocation, unlockAt, paymentId]);
+
+  // NEW: warn before a refresh / closing the tab while a payment or upload
+  // is in progress, or after paying but before the Snap is posted.
+  useEffect(() => {
+    if (!busy && !paymentId) return;
+
+    function warn(event) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", warn);
+
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [busy, paymentId]);
 
   if (!selectedSpace) {
     return (
@@ -201,10 +287,24 @@ function CreateSnap() {
 
     setStage("order");
 
-    const [{ order, keyId }, Razorpay] = await Promise.all([
-      createSpaceOrder(selectedSpace.id),
-      loadRazorpay(),
-    ]);
+    let order;
+    let keyId;
+    let Razorpay;
+
+    try {
+      [{ order, keyId }, Razorpay] = await Promise.all([
+        createSpaceOrder(selectedSpace.id),
+        loadRazorpay(),
+      ]);
+    } catch (err) {
+      // NEW: they already paid for this space earlier (e.g. before a
+      // refresh). Don't charge again — carry on with that payment.
+      if (err.code === "ALREADY_PAID" && err.paymentId) {
+        return err.paymentId;
+      }
+
+      throw err;
+    }
 
     return new Promise((resolve, reject) => {
       let succeeded = false;
@@ -242,6 +342,8 @@ function CreateSnap() {
           } catch {
             // Keep it, so the next press confirms this payment again.
             pendingVerifyRef.current = payload;
+            // NEW: remember it, so a refresh can still confirm this payment
+            saveDraft(uid, spaceKey, { pendingVerify: payload });
 
             reject(
               new Error(
@@ -274,7 +376,7 @@ function CreateSnap() {
     });
   }
 
-  function applyFile(file) {
+  async function applyFile(file) {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -291,9 +393,21 @@ function CreateSnap() {
       return;
     }
 
-    setImage(file);
     setError("");
-    setPreviewUrl(URL.createObjectURL(file));
+
+    // NEW: shrink big phone photos now, BEFORE paying — a huge file is what
+    // made uploads time out. Falls back to the original if anything fails.
+    setOptimizing(true);
+
+    const ready = await compressImage(file);
+
+    setOptimizing(false);
+
+    setImage(ready);
+    setPreviewUrl(URL.createObjectURL(ready));
+
+    // NEW: remember the photo so a refresh doesn't lose it
+    if (uid && spaceKey) saveDraftImage(uid, spaceKey, ready);
   }
 
   function handleImageChange(event) {
@@ -309,6 +423,8 @@ function CreateSnap() {
   function handleRemoveImage() {
     setImage(null);
     setPreviewUrl("");
+
+    if (uid && spaceKey) deleteDraftImage(uid, spaceKey);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -401,7 +517,13 @@ function CreateSnap() {
       setStage("uploading");
 
       if (!uploadedRef.current || uploadedRef.current.file !== image) {
-        const uploadResult = await uploadSnapImage(image, currentUser.uid);
+        setUploadPercent(0);
+
+        const uploadResult = await uploadSnapImage(
+          image,
+          currentUser.uid,
+          setUploadPercent
+        );
 
         uploadedRef.current = { file: image, ...uploadResult };
       }
@@ -445,6 +567,9 @@ function CreateSnap() {
         throw failure;
       }
 
+      // Posted: the draft is no longer needed.
+      clearDraft(uid, spaceKey);
+
       // A locked capsule isn't on the wall yet — show it in Time Capsules.
       navigate(snapType === "capsule" ? "/profile?tab=capsules" : "/wall");
     } catch (err) {
@@ -456,6 +581,7 @@ function CreateSnap() {
         // The space was taken and the money has been returned automatically:
         // there is nothing left to retry.
         setPaymentId("");
+        clearDraft(uid, spaceKey);
         setError(message);
       } else if (paidId && !pendingVerifyRef.current) {
         setError(
@@ -497,9 +623,26 @@ function CreateSnap() {
         </header>
 
         <form onSubmit={handleSubmit} className="createsnap__form">
+          {/* NEW: shown after a refresh, when we put back an unfinished Snap */}
+          {restored && (
+            <div className="createsnap__restored" role="status">
+              <HiCheckCircle />
+              <span>
+                We saved your unfinished Snap and put it back
+                {paymentId
+                  ? " — your payment is already received, just press the button to finish."
+                  : "."}
+              </span>
+            </div>
+          )}
+
           {/* ---------- Photo ---------- */}
           <section className="createsnap__section">
             <span className="createsnap__label">Photo</span>
+
+            {optimizing && (
+              <p className="createsnap__hint-line">Getting your photo ready...</p>
+            )}
 
             <input
               ref={fileInputRef}
@@ -593,7 +736,7 @@ function CreateSnap() {
           {/* ---------- Location (NEW) ---------- */}
           <section className="createsnap__section">
             <div className="createsnap__label-row">
-              <span className="createsnap__label">Location</span>
+              <span className="createsnap__label">Country</span>
               <span className="createsnap__counter">Optional</span>
             </div>
 
@@ -690,11 +833,13 @@ function CreateSnap() {
             <button
               type="submit"
               className="createsnap__btn createsnap__btn--primary"
-              disabled={busy}
+              disabled={busy || optimizing}
             >
               {busy && <span className="createsnap__spinner" />}
               {busy
-                ? STAGE_LABELS[stage]
+                ? stage === "uploading" && uploadPercent > 0
+                  ? `Uploading photo... ${uploadPercent}%`
+                  : STAGE_LABELS[stage]
                 : `${!paymentId && price ? `Pay ₹${price} & ` : ""}${
                     snapType === "capsule" ? "Lock Snap" : "Post Snap"
                   }`}

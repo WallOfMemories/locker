@@ -19,4 +19,8 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
+// NEW: give up on a stuck upload after 3 minutes (the default is 10), so the
+// person sees a clear message and can retry instead of staring at a spinner.
+storage.maxUploadRetryTime = 3 * 60 * 1000;
+
 export default app;

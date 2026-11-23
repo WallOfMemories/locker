@@ -1,6 +1,7 @@
 import {
   ref,
   uploadBytes,
+  uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
 
@@ -43,9 +44,36 @@ export function validateImage(file, maxMb = MAX_SNAP_MB) {
   }
 }
 
+// NEW: turns Firebase's technical messages ("Firebase Storage: Max retry time
+// for operation exceeded...") into something a person can act on.
+function friendlyUploadError(error) {
+  const code = error?.code || "";
+
+  if (code === "storage/retry-limit-exceeded" || code === "storage/network-request-failed") {
+    return "The photo upload was too slow or your connection dropped.";
+  }
+
+  if (code === "storage/unauthorized") {
+    return "The upload was blocked. Please log in again and try once more.";
+  }
+
+  if (code === "storage/canceled") {
+    return "The upload was cancelled.";
+  }
+
+  if (code === "storage/quota-exceeded") {
+    return "We can't take uploads right now. Please try again later.";
+  }
+
+  return "We couldn't upload your photo.";
+}
+
+// CHANGED: uses a resumable upload so we can report progress
+// (onProgress receives 0–100), and fails with a readable message.
 export async function uploadSnapImage(
   file,
-  userId
+  userId,
+  onProgress
 ) {
   validateImage(file);
 
@@ -67,26 +95,41 @@ export async function uploadSnapImage(
   const storageRef =
     ref(storage, storagePath);
 
-  await uploadBytes(
-    storageRef,
-    file,
-    {
-      contentType: file.type,
-    }
-  );
+  try {
+    await new Promise((resolve, reject) => {
+      const task = uploadBytesResumable(storageRef, file, {
+        contentType: file.type,
+      });
 
-  const downloadURL =
-    await getDownloadURL(storageRef);
+      task.on(
+        "state_changed",
+        (snapshot) => {
+          if (onProgress && snapshot.totalBytes > 0) {
+            onProgress(
+              Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+            );
+          }
+        },
+        reject,
+        resolve
+      );
+    });
 
-  return {
-    downloadURL,
-    storagePath,
-    fileName,
-  };
+    const downloadURL =
+      await getDownloadURL(storageRef);
+
+    return {
+      downloadURL,
+      storagePath,
+      fileName,
+    };
+  } catch (error) {
+    console.error("Photo upload failed:", error);
+
+    throw new Error(friendlyUploadError(error), { cause: error });
+  }
 }
 
-
-// Profile image upload
 export async function uploadProfileImage(
   file,
   userId
