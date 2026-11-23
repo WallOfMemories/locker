@@ -595,3 +595,10 @@
     animation: none;
   }
 }
+
+/* NEW: the small "(optional)" next to a field label */
+.field__optional {
+  font-weight: 400;
+  color: var(--ink-soft);
+  opacity: 0.8;
+}

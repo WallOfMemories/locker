@@ -4,6 +4,7 @@ import {
   FiGrid,
   FiFlag,
   FiCreditCard,
+  FiTag,
   FiMaximize,
   FiArrowLeft,
   FiLogOut,
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { to: "/admin/dashboard", label: "Dashboard", icon: FiGrid },
   { to: "/admin/reports", label: "Reports", icon: FiFlag },
   { to: "/admin/payments", label: "Payments", icon: FiCreditCard },
+  { to: "/admin/bids", label: "Bids", icon: FiTag }, // NEW
   { to: "/admin/wall", label: "Wall Size", icon: FiMaximize },
 ];
 

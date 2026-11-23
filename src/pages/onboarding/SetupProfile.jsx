@@ -438,11 +438,14 @@ function SetupProfile() {
                 </label>
 
                 <label className="field">
-                  <span className="field__label">Bio</span>
+                  {/* CHANGED: marked optional — you can skip it */}
+                  <span className="field__label">
+                    Bio <span className="field__optional">(optional)</span>
+                  </span>
                   <textarea
                     value={bio}
                     onChange={(event) => setBio(event.target.value)}
-                    placeholder="Write something about yourself..."
+                    placeholder="Write something about yourself (optional)"
                     maxLength={160}
                     rows={4}
                     disabled={saving}

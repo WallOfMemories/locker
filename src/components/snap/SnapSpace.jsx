@@ -3,8 +3,10 @@ import { HiLockClosed, HiEyeOff } from "react-icons/hi";
 // every size (the old hand-drawn bars looked thicker or thinner depending on
 // where the box landed on the screen)
 import { FiPlusCircle } from "react-icons/fi";
+import { FaGavel } from "react-icons/fa"; // NEW: bid box badge
 
 import { formatShortDate } from "../../utils/countdown";
+import { isBidBox } from "../../utils/bidBoxes"; // NEW: gold bid boxes
 
 import "./SnapSpace.css";
 
@@ -23,6 +25,10 @@ import "./SnapSpace.css";
 function SnapSpace({ space, onSelect, style, mine = false }) {
   const isOccupied = space.status === "occupied";
 
+  // NEW: an EMPTY box among the first 20 is a bid box (shown in gold).
+  // Once it has a Snap it looks like every other box.
+  const isBid = !isOccupied && isBidBox(space.id);
+
   // A sealed Time Capsule — the space is taken but the photo and caption
   // stay private until it unlocks (the server doesn't send them).
   const isLocked = isOccupied && space.locked;
@@ -37,7 +43,9 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
         ? "Sealed Time Capsule"
         : isOccupied
           ? space.caption || "Snap"
-          : "Available space") + (mine ? " (yours)" : "");
+          : isBid
+            ? "Available for bidding"
+            : "Available space") + (mine ? " (yours)" : "");
 
   return (
     <button
@@ -45,7 +53,7 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
         isOccupied ? "snap-space--occupied" : "snap-space--available"
       } ${isLocked || isHidden ? "snap-space--locked" : ""} ${
         mine ? "snap-space--mine" : ""
-      }`}
+      } ${isBid ? "snap-space--bid" : ""}`}
       style={style}
       onClick={() => onSelect(space)}
       type="button"
@@ -93,6 +101,14 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
               </span>
             </div>
           </>
+        ) : isBid ? (
+          // NEW: a bid box — gold gavel badge + "BID" tag
+          <div className="snap-space__bid">
+            <span className="snap-space__bid-badge" aria-hidden="true">
+              <FaGavel />
+            </span>
+            <small>Bid</small>
+          </div>
         ) : (
           <div className="snap-space__available">
             <FiPlusCircle

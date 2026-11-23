@@ -26,7 +26,7 @@ function Navbar() {
               <Link to="/" className="navbar__logo">
                 THE<span>LOCKER</span>
               </Link>
-              <p className="navbar__tagline">My Memory on the earth</p>
+              <p className="navbar__tagline">Leave your memory on these Earth</p>
             </div>
 
             <div className="navbar__actions">

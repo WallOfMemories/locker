@@ -1,0 +1,274 @@
+/* ------------------------------------------------------------
+   NEW look for the bid panel (REDESIGNED).
+   A clean ivory card with a fine gold edge and a gold accent line on top,
+   matching the gold bid boxes on the wall. The old loud yellow slab and
+   dark-brown button are gone.
+   ------------------------------------------------------------ */
+.bidpanel {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 4px 0 14px;
+  padding: 20px 18px 16px;
+  border-radius: 20px;
+  background: #fffdf7;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 10px 28px -14px rgba(176, 124, 8, 0.45);
+  text-align: left;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* thin gold accent line along the top */
+.bidpanel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, #f6dd86, #d9a92f 50%, #f6dd86);
+}
+
+/* ----- header: gold gavel badge + title ----- */
+.bidpanel__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bidpanel__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #fde9a0 0%, #e8c14e 52%, #c9921a 100%);
+  color: #5a3b00;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 -2px 3px rgba(120, 78, 0, 0.3),
+    0 3px 8px rgba(176, 124, 8, 0.35);
+}
+
+.bidpanel__badge svg {
+  width: 15px;
+  height: 15px;
+}
+
+.bidpanel__tag {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a5d00;
+}
+
+.bidpanel p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.bidpanel p strong {
+  color: var(--ink);
+}
+
+.bidpanel__big {
+  font-family: var(--font-display);
+  font-size: 2.2rem !important;
+  line-height: 1.1 !important;
+  font-weight: 600;
+  color: var(--ink) !important;
+}
+
+/* ----- the amount field: ₹ inside one rounded input ----- */
+.bidpanel__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.bidpanel__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 0 16px;
+  border: 1.5px solid rgba(201, 162, 39, 0.55);
+  border-radius: 14px;
+  background: #fff;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bidpanel__field:focus-within {
+  border-color: #c9921a;
+  box-shadow: 0 0 0 4px rgba(233, 193, 78, 0.28);
+}
+
+.bidpanel__currency {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #b07c08;
+}
+
+.bidpanel__field input {
+  flex: 1;
+  min-width: 0;
+  padding: 15px 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.bidpanel__field input::placeholder {
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(122, 106, 90, 0.6);
+}
+
+.bidpanel__field input:focus {
+  outline: none;
+}
+
+/* ----- buttons: gold, to match the theme ----- */
+.bidpanel__primary,
+.bidpanel__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bidpanel__primary {
+  border: none;
+  background: linear-gradient(180deg, #f6d975 0%, #dcae33 100%);
+  color: #4a3200;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 8px 18px -8px rgba(176, 124, 8, 0.7);
+}
+
+.bidpanel__primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 12px 22px -8px rgba(176, 124, 8, 0.8);
+}
+
+.bidpanel__secondary {
+  border: 1.5px solid rgba(201, 162, 39, 0.7);
+  background: #fff;
+  color: #6b4700;
+}
+
+.bidpanel__primary:disabled,
+.bidpanel__secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bidpanel__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.bidpanel__link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  color: #8a5d00;
+  cursor: pointer;
+}
+
+/* ----- footer note ----- */
+.bidpanel__hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 12px 0 0 !important;
+  font-size: 12.5px !important;
+  text-align: center;
+  color: var(--ink-soft) !important;
+}
+
+.bidpanel__hint svg {
+  flex-shrink: 0;
+  color: #b07c08;
+}
+
+.bidpanel__msg {
+  margin: 12px 0 0 !important;
+  font-weight: 600;
+}
+
+.bidpanel__msg--error {
+  color: #a3261c !important;
+}
+
+.bidpanel__msg--ok {
+  color: #2f6b3f !important;
+}
+
+/* ----- accepted / paid ----- */
+.bidpanel--won {
+  border-color: rgba(47, 107, 63, 0.5);
+  background: #fbfff6;
+}
+
+.bidpanel--won::before {
+  background: linear-gradient(90deg, #b9e08a, #5a9a52 50%, #b9e08a);
+}
+
+.bidpanel--won .bidpanel__tag {
+  color: #2f6b3f;
+}
+
+.bidpanel--won .bidpanel__primary {
+  background: linear-gradient(180deg, #5fa65a 0%, #3f7f3f 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px -8px rgba(47, 107, 63, 0.7);
+}
+
+.bidpanel--closed {
+  opacity: 0.9;
+}
+
+.bidpanel__deadline {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(233, 193, 78, 0.16);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  color: #6b4700 !important;
+}
+
+.bidpanel--won .bidpanel__deadline {
+  background: rgba(95, 166, 90, 0.12);
+  border-color: rgba(47, 107, 63, 0.35);
+  color: #2f5a3a !important;
+}

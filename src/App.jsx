@@ -28,6 +28,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminReports from "./pages/admin/AdminReports";
 import AdminPayments from "./pages/admin/AdminPayments";
+import AdminBids from "./pages/admin/AdminBids"; // NEW
 import AdminWall from "./pages/admin/AdminWall";
 
 // Onboarding
@@ -92,6 +93,7 @@ function App() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="reports" element={<AdminReports />} />
                 <Route path="payments" element={<AdminPayments />} />
+                <Route path="bids" element={<AdminBids />} />
                 <Route path="wall" element={<AdminWall />} />
               </Route>
             </Route>

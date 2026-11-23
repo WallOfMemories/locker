@@ -1,59 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import { HiLocationMarker, HiPlus, HiSearch, HiX } from "react-icons/hi";
 
-import {
-  reverseLocation,
-  searchLocations,
-} from "../../services/locationService";
+import { searchLocations } from "../../services/locationService";
 
 import "./LocationPicker.css";
 
 /**
  * Instagram-style "Add location" field.
  *  - type to search places, pick one from the list
- *  - or tap "Use my current location"
+ *  CHANGED: the "Use my current location" button was removed — people
+ *  search for a place instead, and the app never asks for GPS access.
  * `value` is { id, name, address, lat, lng } | null
  */
 function LocationPicker({ value, onChange }) {
   const wrapRef = useRef(null);
 
-  // NEW: the user's position (when known) so nearby places rank first.
-  const biasRef = useRef(null);
-
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [locating, setLocating] = useState(false);
   const [error, setError] = useState("");
   const [active, setActive] = useState(-1);
 
   const trimmed = query.trim();
   const canSearch = trimmed.length >= 2;
-
-  // NEW: if the browser already has location permission, quietly read the
-  // position once so searches favour places near the user. This never
-  // shows a permission prompt — "Use my current location" does that.
-  useEffect(() => {
-    if (!navigator.geolocation || !navigator.permissions?.query) {
-      return;
-    }
-
-    navigator.permissions
-      .query({ name: "geolocation" })
-      .then((status) => {
-        if (status.state !== "granted") return;
-
-        navigator.geolocation.getCurrentPosition(
-          ({ coords }) => {
-            biasRef.current = { lat: coords.latitude, lng: coords.longitude };
-          },
-          () => {},
-          { maximumAge: 600000, timeout: 5000 }
-        );
-      })
-      .catch(() => {});
-  }, []);
 
   // Debounced search; stale requests are aborted.
   useEffect(() => {
@@ -68,8 +38,7 @@ function LocationPicker({ value, onChange }) {
 
         const places = await searchLocations(
           trimmed,
-          controller.signal,
-          biasRef.current
+          controller.signal
         );
 
         setResults(places);
@@ -151,60 +120,6 @@ function LocationPicker({ value, onChange }) {
     }
   }
 
-  function handleUseCurrent() {
-    if (!navigator.geolocation) {
-      setError("Your browser can't share your location. Search for a place instead.");
-      return;
-    }
-
-    setLocating(true);
-    setError("");
-
-    navigator.geolocation.getCurrentPosition(
-      async ({ coords }) => {
-        const lat = coords.latitude;
-        const lng = coords.longitude;
-
-        biasRef.current = { lat, lng };
-
-        try {
-          const place = await reverseLocation(lat, lng);
-
-          choose(
-            place || {
-              id: `geo-${lat.toFixed(4)},${lng.toFixed(4)}`,
-              name: "Current location",
-              address: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-              lat,
-              lng,
-            }
-          );
-        } catch {
-          // Name lookup failed — the coordinates are still a valid location.
-          choose({
-            id: `geo-${lat.toFixed(4)},${lng.toFixed(4)}`,
-            name: "Current location",
-            address: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-            lat,
-            lng,
-          });
-        } finally {
-          setLocating(false);
-        }
-      },
-      (geoError) => {
-        setLocating(false);
-
-        setError(
-          geoError.code === 1
-            ? "Location permission was blocked. Search for a place instead."
-            : "Couldn't get your location. Search for a place instead."
-        );
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
-  }
-
   // ---------- A location is already chosen ----------
   if (value) {
     return (
@@ -261,20 +176,6 @@ function LocationPicker({ value, onChange }) {
 
         {loading && <span className="locpicker__spinner" />}
       </div>
-
-      <button
-        type="button"
-        className="locpicker__current"
-        onClick={handleUseCurrent}
-        disabled={locating}
-      >
-        {locating ? (
-          <span className="locpicker__spinner" />
-        ) : (
-          <HiLocationMarker />
-        )}
-        {locating ? "Finding you…" : "Use my current location"}
-      </button>
 
       {error && (
         <p className="locpicker__error" role="alert">

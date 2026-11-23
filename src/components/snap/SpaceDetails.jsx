@@ -14,6 +14,8 @@ import { formatUnlockDate, timeUntil } from "../../utils/countdown";
 import { reportSnap } from "../../services/moderationApi";
 import ReportDialog from "./ReportDialog";
 import ReportMenu from "./ReportMenu";
+import BidPanel, { useBoxBid } from "./BidPanel"; // NEW: bid option
+import { isBidBox } from "../../utils/bidBoxes";
 import {
   getSnapLikeInfo,
   likeSnap,
@@ -114,6 +116,10 @@ function SpaceDetails({ space, price, onClose }) {
   const [saveLoading, setSaveLoading] = useState(false);
 
   const [reportOpen, setReportOpen] = useState(false);
+
+  // NEW: bid state for this box (only loads for empty boxes). `bid.bidBox`
+  // is false everywhere except the first boxes of the wall.
+  const bid = useBoxBid(space);
 
   // "idle" | "copied" | "failed" — shown on the Share button for 2 seconds
   const [shareState, setShareState] = useState("idle");
@@ -265,16 +271,9 @@ function SpaceDetails({ space, price, onClose }) {
   // "space_006" -> "006" (nothing is shown if the id has no digits)
   const spaceNumber = String(space.id ?? "").match(/\d+/)?.[0] || "";
 
-  // NEW: the location pill opens the place in Google Maps. Places the
-  // person typed by hand have no coordinates, so those stay plain text.
+  // CHANGED: the location pill is now plain text. It used to open the place
+  // in Google Maps; that link was removed on purpose.
   const place = space.location;
-
-  const mapsUrl =
-    place &&
-    Number.isFinite(place.lat) &&
-    Number.isFinite(place.lng)
-      ? `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`
-      : null;
 
   const placeTitle = place
     ? [place.name, place.address].filter(Boolean).join(", ")
@@ -360,6 +359,8 @@ function SpaceDetails({ space, price, onClose }) {
                 src={space.image}
                 alt={space.caption || "Snap"}
                 className="snapmodal__image"
+                draggable={false}
+                onContextMenu={(event) => event.preventDefault()}
               />
             </div>
 
@@ -369,22 +370,11 @@ function SpaceDetails({ space, price, onClose }) {
               <p className="snapmodal__username">@{space.username}</p>
 
               <div className="snapmodal__meta-end">
-                {place &&
-                  (mapsUrl ? (
-                    <a
-                      className="snapmodal__place snapmodal__place--link"
-                      href={mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={`${placeTitle} · Open in Google Maps`}
-                    >
-                      {placeContent}
-                    </a>
-                  ) : (
-                    <span className="snapmodal__place" title={placeTitle}>
-                      {placeContent}
-                    </span>
-                  ))}
+                {place && (
+                  <span className="snapmodal__place" title={placeTitle}>
+                    {placeContent}
+                  </span>
+                )}
 
                 {canReport && <ReportMenu onReport={handleReportClick} />}
               </div>
@@ -438,36 +428,59 @@ function SpaceDetails({ space, price, onClose }) {
               )}
             </span>
 
-            <h2 className="snapmodal__title">Make this space yours.</h2>
+            {/* NEW: the first boxes are BID-ONLY — no ₹ price and no buy
+                button, just the bid form. Every other box is unchanged. */}
+            {isBidBox(space.id) ? (
+              <>
+                <h2 className="snapmodal__title">Bid for this space.</h2>
 
-            <p className="snapmodal__description">
-              Create a Snap and place your memory on The Locker.
-            </p>
+                <p className="snapmodal__description">
+                  Enter the amount you would pay for this space. The admin
+                  reviews every bid and will accept it, decline it, or send a
+                  counter offer.
+                </p>
 
-            <div className="snapmodal__price">
-              <span className="snapmodal__price-label">Space price</span>
-              <span className="snapmodal__price-value">₹{price}</span>
-            </div>
+                <BidPanel
+                  space={space}
+                  bid={bid}
+                  currentUser={currentUser}
+                  onLogin={() => goToLogin("wall")}
+                />
+              </>
+            ) : (
+              <>
+                <h2 className="snapmodal__title">Make this space yours.</h2>
 
-            <button
-              className="snapmodal__primary"
-              type="button"
-              onClick={() => {
-                if (!currentUser) {
-                  goToLogin("create");
-                  return;
-                }
+                <p className="snapmodal__description">
+                  Create a Snap and place your memory on The Locker.
+                </p>
 
-                navigate("/create-snap", {
-                  state: {
-                    space,
-                  },
-                });
-              }}
-            >
-              {currentUser ? "Create Snap" : "Log in to create a Snap"}
-              <HiArrowRight />
-            </button>
+                <div className="snapmodal__price">
+                  <span className="snapmodal__price-label">Space price</span>
+                  <span className="snapmodal__price-value">₹{price}</span>
+                </div>
+
+                <button
+                  className="snapmodal__primary"
+                  type="button"
+                  onClick={() => {
+                    if (!currentUser) {
+                      goToLogin("create");
+                      return;
+                    }
+
+                    navigate("/create-snap", {
+                      state: {
+                        space,
+                      },
+                    });
+                  }}
+                >
+                  {currentUser ? "Create Snap" : "Log in to create a Snap"}
+                  <HiArrowRight />
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -91,7 +91,10 @@ function CreateSnap() {
   //   never charged again for this Snap — if a later step fails (network,
   //   upload...) pressing the button again just finishes posting. It can also
   //   arrive from Payment History ("Finish posting").
-  const [price, setPrice] = useState(null);
+  // NEW: a bid winner arrives with their winning amount (display only — the
+  // server decides what is really charged).
+  const bidAmount = Number(location.state?.bidAmount) || 0;
+  const [price, setPrice] = useState(bidAmount || null);
   const [paymentId, setPaymentId] = useState(location.state?.paymentId || "");
   const pendingVerifyRef = useRef(null); // paid in Razorpay, not yet confirmed by our server
   const uploadedRef = useRef(null); // { file, downloadURL, storagePath } — never upload twice
@@ -123,7 +126,8 @@ function CreateSnap() {
       .then((settings) => {
         const value = Number(settings?.spacePrice);
 
-        if (!cancelled && value > 0) setPrice(value);
+        // CHANGED: a bid winner keeps seeing their winning amount.
+        if (!cancelled && value > 0 && !bidAmount) setPrice(value);
       })
       .catch(() => {
         // Not fatal: the button just won't show an amount.
@@ -132,7 +136,7 @@ function CreateSnap() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [bidAmount]);
 
   if (!selectedSpace) {
     return (
