@@ -1,10 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
+import { FiBell } from "react-icons/fi"; // NEW: notifications icon
 import { useAuth } from "../../context/AuthContext";
+import { useNotifications } from "../../context/NotificationContext"; // NEW
 import "./Navbar.css";
 
 function Navbar() {
   const { currentUser, profile, needsProfileSetup, loading } = useAuth();
   const { pathname } = useLocation();
+  // NEW: unread notifications, for the bell badge
+  const { unreadCount } = useNotifications();
 
   // Hidden while checking login, on the login pages and during profile setup.
   const onAuthPage = ["/login", "/register", "/forgot-password"].includes(
@@ -15,7 +19,7 @@ function Navbar() {
     return null;
   }
 
-  // Visitors who are not logged in: logo + Log in / Sign up
+  // Visitors who are not logged in: logo + one "Log in" button
   if (!currentUser) {
     return (
       <>
@@ -26,16 +30,15 @@ function Navbar() {
               <Link to="/" className="navbar__logo">
                 THE<span>LOCKER</span>
               </Link>
-              <p className="navbar__tagline">Leave your memory on these Earth</p>
+              <p className="navbar__tagline">LEAVE YOUR MEMORY ON THIS EARTH</p>
             </div>
 
+            {/* CHANGED: "Log in" + "Sign up" side by side confused people, so
+                there is ONE button now: "Log in". New people can still
+                create an account from the link on the login page. */}
             <div className="navbar__actions">
               <Link to="/login" className="navbar__login">
                 Log in
-              </Link>
-
-              <Link to="/register" className="navbar__signup">
-                Sign up
               </Link>
             </div>
           </div>
@@ -64,7 +67,7 @@ function Navbar() {
           <Link to="/" className="navbar__logo">
             THE<span>LOCKER</span>
           </Link>
-          <p className="navbar__tagline">Leave your memory on these Earth</p>
+          <p className="navbar__tagline">LEAVE YOUR MEMORY ON THIS EARTH</p>
         </div>
 
         <div className="navbar__actions">
@@ -75,6 +78,34 @@ function Navbar() {
               Admin
             </Link>
           )}
+
+          {/* NEW: notifications bell. Tapping it opens the Notifications
+              page; the red badge shows how many are unread. */}
+          <Link
+            to="/profile/notifications"
+            className={`navbar__bell ${
+              pathname.startsWith("/profile/notifications") ? "is-active" : ""
+            }`}
+            aria-label={
+              unreadCount > 0
+                ? `Notifications, ${unreadCount} unread`
+                : "Notifications"
+            }
+            title="Notifications"
+          >
+            <FiBell />
+
+            {unreadCount > 0 && (
+              <span
+                className={`navbar__bell-badge ${
+                  unreadCount > 99 ? "navbar__bell-badge--wide" : ""
+                }`}
+                aria-hidden="true"
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </Link>
 
           <Link to="/profile" className="navbar__user">
             {photoURL ? (

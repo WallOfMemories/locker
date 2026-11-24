@@ -41,6 +41,16 @@ function TheLocker() {
     };
   }, []);
 
+  // NEW: re-check the wall right now (used after someone reserves a box, so
+  // it turns "Reserved" without waiting for the next check).
+  async function refreshWall() {
+    try {
+      setSpaces(await getSpaces());
+    } catch {
+      // the next quiet check will try again
+    }
+  }
+
   // NEW: while the page is open, quietly re-check the wall so spaces an admin
   // adds and Snaps other people post show up without a refresh. It never
   // shows the loading screen and never touches an error that is on screen.
@@ -154,6 +164,7 @@ function TheLocker() {
         space={selectedSpace}
         price={spacePrice}
         onClose={closeDetails}
+        onReserved={refreshWall}
       />
     </main>
   );

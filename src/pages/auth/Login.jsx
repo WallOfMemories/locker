@@ -223,7 +223,7 @@ function Login() {
           <div className="photo-card__body">
             <p className="photo-card__eyebrow">The Locker</p>
             <h2 className="photo-card__title">Welcome back</h2>
-            <p className="photo-card__desc">Sign in to manage your Snaps and profile.</p>
+            <p className="photo-card__desc">Log in to manage your Snaps and profile.</p>
 
             {error && <div className="auth-error">{error}</div>}
 

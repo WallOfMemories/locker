@@ -177,14 +177,14 @@ function DeleteAccountSection() {
             <strong>Right away</strong>
             <p>
               All your Snaps are hidden from the wall, share links and other
-              people&apos;s lists. You can still sign in.
+              people&apos;s lists. You can still log in.
             </p>
           </li>
 
           <li>
             <strong>For {summary.graceDays} days</strong>
             <p>
-              Nothing is deleted yet. Sign in and press &ldquo;Cancel
+              Nothing is deleted yet. Log in and press &ldquo;Cancel
               deletion&rdquo; and everything is restored. You can&apos;t buy
               new spaces during this time.
             </p>

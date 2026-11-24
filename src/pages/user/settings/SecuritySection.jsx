@@ -112,7 +112,7 @@ function SecuritySection() {
 
         setVersion((value) => value + 1);
         setSuccess(
-          "Password added. You can now sign in with your email and password too."
+          "Password added. You can now log in with your email and password too."
         );
       }
 
@@ -149,7 +149,7 @@ function SecuritySection() {
     <div className="settings__stack">
       {/* ---------- how you sign in ---------- */}
       <div className="settings__block">
-        <h3>How you sign in</h3>
+        <h3>How you log in</h3>
 
         <ul className="settings__rows">
           <li>
@@ -184,8 +184,8 @@ function SecuritySection() {
 
         {!hasPassword && (
           <p className="settings__hint">
-            You sign in with Google, so there is no password yet. Add one if you
-            also want to sign in with your email and password. Your Google
+            You log in with Google, so there is no password yet. Add one if you
+            also want to log in with your email and password. Your Google
             account&apos;s own security is managed by Google.
           </p>
         )}

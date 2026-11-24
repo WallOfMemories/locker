@@ -16,6 +16,8 @@ import ReportDialog from "./ReportDialog";
 import ReportMenu from "./ReportMenu";
 import BidPanel, { useBoxBid } from "./BidPanel"; // NEW: bid option
 import { isBidBox } from "../../utils/bidBoxes";
+import { payAndReserve } from "../../services/reservePayment"; // NEW: pay first
+import { useMyReservation } from "./useMyReservation"; // NEW
 import {
   getSnapLikeInfo,
   likeSnap,
@@ -81,9 +83,9 @@ function SpacePreview({ locked }) {
   );
 }
 
-function SpaceDetails({ space, price, onClose }) {
+function SpaceDetails({ space, price, onClose, onReserved }) {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, profile } = useAuth();
 
   // Visitors who are not logged in can look around, but liking, saving,
   // reporting and creating a Snap send them to /login. After login they come
@@ -120,6 +122,47 @@ function SpaceDetails({ space, price, onClose }) {
   // NEW: bid state for this box (only loads for empty boxes). `bid.bidBox`
   // is false everywhere except the first boxes of the wall.
   const bid = useBoxBid(space);
+
+  // NEW: "pay first, post whenever you want". `held` is the payment this
+  // person already made for this space (from earlier, or just now).
+  const myReservation = useMyReservation(space, currentUser, !isBidBox(space?.id));
+  const [reserving, setReserving] = useState(false);
+  const [reserveError, setReserveError] = useState("");
+  const heldPaymentId = myReservation.paymentId;
+
+  async function handleReserve() {
+    if (!currentUser) {
+      goToLogin("wall");
+      return;
+    }
+
+    setReserving(true);
+    setReserveError("");
+
+    try {
+      const paymentId = await payAndReserve({
+        space,
+        user: currentUser,
+        profile,
+        onFailed: setReserveError,
+      });
+
+      if (paymentId) {
+        myReservation.setPaymentId(paymentId);
+        onReserved?.();
+      }
+    } catch (error) {
+      setReserveError(error.message || "Something went wrong. Please try again.");
+    } finally {
+      setReserving(false);
+    }
+  }
+
+  function openCreateSnap() {
+    navigate("/create-snap", {
+      state: { space, paymentId: heldPaymentId },
+    });
+  }
 
   // "idle" | "copied" | "failed" — shown on the Share button for 2 seconds
   const [shareState, setShareState] = useState("idle");
@@ -452,33 +495,76 @@ function SpaceDetails({ space, price, onClose }) {
                 <h2 className="snapmodal__title">Make this space yours.</h2>
 
                 <p className="snapmodal__description">
-                  Create a Snap and place your memory on The Locker.
+                  Reserve this box now and place your memory on The Locker
+                  whenever you're ready.
                 </p>
 
-                <div className="snapmodal__price">
-                  <span className="snapmodal__price-label">Space price</span>
-                  <span className="snapmodal__price-value">₹{price}</span>
-                </div>
+                {/* NEW: this person already PAID — the box is theirs, no rush */}
+                {heldPaymentId ? (
+                  <div className="reserved-panel reserved-panel--mine">
+                    <span className="reserved-panel__tag">Reserved for you</span>
+                    <p>
+                      You've paid for this box, so it's yours. Upload your photo
+                      whenever you're ready — there's no deadline.
+                    </p>
+                    <button
+                      className="snapmodal__primary"
+                      type="button"
+                      onClick={openCreateSnap}
+                    >
+                      Create your Snap
+                      <HiArrowRight />
+                    </button>
+                    <button
+                      className="reserved-panel__later"
+                      type="button"
+                      onClick={onClose}
+                    >
+                      I'll do it later
+                    </button>
+                  </div>
+                ) : space.reserved ? (
+                  /* someone else has paid and will post soon */
+                  <div className="reserved-panel">
+                    <span className="reserved-panel__tag">Reserved</span>
+                    <p>
+                      Someone has already claimed this box and will post their
+                      Snap soon. Please pick another space.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="snapmodal__price">
+                      <span className="snapmodal__price-label">Space price</span>
+                      <span className="snapmodal__price-value">₹{price}</span>
+                    </div>
 
-                <button
-                  className="snapmodal__primary"
-                  type="button"
-                  onClick={() => {
-                    if (!currentUser) {
-                      goToLogin("create");
-                      return;
-                    }
+                    <button
+                      className="snapmodal__primary"
+                      type="button"
+                      disabled={reserving}
+                      onClick={handleReserve}
+                    >
+                      {reserving
+                        ? "Opening payment..."
+                        : currentUser
+                          ? `Pay ₹${price} & reserve this box`
+                          : "Log in to reserve this box"}
+                      <HiArrowRight />
+                    </button>
 
-                    navigate("/create-snap", {
-                      state: {
-                        space,
-                      },
-                    });
-                  }}
-                >
-                  {currentUser ? "Create Snap" : "Log in to create a Snap"}
-                  <HiArrowRight />
-                </button>
+                    <p className="reserved-panel__note">
+                      Pay now and the box is yours. Upload your photo anytime
+                      you like.
+                    </p>
+
+                    {reserveError && (
+                      <p className="reserved-panel__error" role="alert">
+                        {reserveError}
+                      </p>
+                    )}
+                  </>
+                )}
               </>
             )}
           </div>

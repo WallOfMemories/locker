@@ -210,9 +210,10 @@ function CreateSnap() {
   }, [draftReady, uid, spaceKey, caption, snapType, snapLocation, unlockAt, paymentId]);
 
   // NEW: warn before a refresh / closing the tab while a payment or upload
-  // is in progress, or after paying but before the Snap is posted.
+  // is in progress. (After paying, the box is reserved — people may leave
+  // and post later — so there is no warning once nothing is running.)
   useEffect(() => {
-    if (!busy && !paymentId) return;
+    if (!busy) return;
 
     function warn(event) {
       event.preventDefault();
@@ -222,7 +223,7 @@ function CreateSnap() {
     window.addEventListener("beforeunload", warn);
 
     return () => window.removeEventListener("beforeunload", warn);
-  }, [busy, paymentId]);
+  }, [busy]);
 
   if (!selectedSpace) {
     return (

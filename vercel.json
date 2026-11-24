@@ -1,7 +1,17 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "snap"
+        }
+      ],
+      "destination": "/api/snap-preview"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ],

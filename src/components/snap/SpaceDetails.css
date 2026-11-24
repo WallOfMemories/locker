@@ -579,3 +579,76 @@
 .snapmodal__action {
   white-space: nowrap;
 }
+
+/* NEW: "pay first" notes and the reserved panels */
+.reserved-panel {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 4px 0 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f7f3ea;
+  border: 1px solid rgba(122, 106, 90, 0.3);
+  text-align: left;
+}
+
+.reserved-panel--mine {
+  background: #fbfff6;
+  border-color: rgba(47, 107, 63, 0.4);
+}
+
+.reserved-panel__tag {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6f5f4a;
+}
+
+.reserved-panel--mine .reserved-panel__tag {
+  color: #2f6b3f;
+}
+
+.reserved-panel p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.reserved-panel__later {
+  display: block;
+  margin: 12px auto 0;
+  border: none;
+  background: none;
+  padding: 4px 8px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.reserved-panel__note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.reserved-panel__error {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  color: #a3261c;
+}
+
+.snapmodal__primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

@@ -4,6 +4,7 @@ import { HiLockClosed, HiEyeOff } from "react-icons/hi";
 // where the box landed on the screen)
 import { FiPlusCircle } from "react-icons/fi";
 import { FaGavel } from "react-icons/fa"; // NEW: bid box badge
+import { HiBookmark } from "react-icons/hi"; // NEW: reserved box
 
 import { formatShortDate } from "../../utils/countdown";
 import { isBidBox } from "../../utils/bidBoxes"; // NEW: gold bid boxes
@@ -29,6 +30,9 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
   // Once it has a Snap it looks like every other box.
   const isBid = !isOccupied && isBidBox(space.id);
 
+  // NEW: someone has PAID for this box and will post their Snap soon.
+  const isReserved = !isOccupied && space.reserved === true;
+
   // A sealed Time Capsule — the space is taken but the photo and caption
   // stay private until it unlocks (the server doesn't send them).
   const isLocked = isOccupied && space.locked;
@@ -43,9 +47,11 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
         ? "Sealed Time Capsule"
         : isOccupied
           ? space.caption || "Snap"
-          : isBid
-            ? "Available for bidding"
-            : "Available space") + (mine ? " (yours)" : "");
+          : isReserved
+            ? "Reserved space"
+            : isBid
+              ? "Available for bidding"
+              : "Available space") + (mine ? " (yours)" : "");
 
   return (
     <button
@@ -53,7 +59,9 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
         isOccupied ? "snap-space--occupied" : "snap-space--available"
       } ${isLocked || isHidden ? "snap-space--locked" : ""} ${
         mine ? "snap-space--mine" : ""
-      } ${isBid ? "snap-space--bid" : ""}`}
+      } ${isBid && !isReserved ? "snap-space--bid" : ""} ${
+        isReserved ? "snap-space--reserved" : ""
+      }`}
       style={style}
       onClick={() => onSelect(space)}
       type="button"
@@ -101,6 +109,14 @@ function SnapSpace({ space, onSelect, style, mine = false }) {
               </span>
             </div>
           </>
+        ) : isReserved ? (
+          // NEW: a paid, not-yet-posted box
+          <div className="snap-space__reserved">
+            <span className="snap-space__reserved-icon" aria-hidden="true">
+              <HiBookmark />
+            </span>
+            <small>Reserved</small>
+          </div>
         ) : isBid ? (
           // NEW: a bid box — gold gavel badge + "BID" tag
           <div className="snap-space__bid">
